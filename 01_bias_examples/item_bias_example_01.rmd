@@ -3,80 +3,16 @@ title: 'Rasch model with item bias'
 subtitle: 'item bias'
 author: 'dacarras'
 date: '`r format(Sys.time(), "%a %b %d %X %Y")`'
-output:
-  html_document:
-    theme: paper
-    highlight: kate
-    number_sections: true
-    toc: true
-    toc_float:
-      collapsed: false
-      smooth_scroll: false
-    fig_width: 10 
-    fig_height: 8 
+output: github_document
 ---
 
-<style>
-  .main-container {
-    max-width: 1600px !important;
-  }
-  .list-group-item.active, 
-  .list-group-item.active:focus, 
-  .list-group-item.active:hover {
-    background-color: #373334;
-  }
-</style>
-
-
-```{r setup, include=FALSE}
-
-#--------------------------------------------------------------------
-# setup
-#--------------------------------------------------------------------
-
-
-# remove all previous objects
-rm(list = ls())
-
-# knitr option
-knitr::opts_chunk$set(dev = 'png')
-options(knitr.kable.NA = '', digits = 2)
-
-# set appropiate time zone via OlsonNames()
-Sys.setenv(TZ="America/Santiago")
-Sys.getenv("TZ")
-Sys.time()
-
-# fonts
-Sys.setenv(LANG="en_US.UTF-8")
-
-# load main library
-library(dplyr)
-
-# -----------------------------------------------
-# install these for getting items descriptives
-# -----------------------------------------------
-
-#  devtools::install_github("dacarras/r4sda")
-
-# -----------------------------------------------
-# decimals
-# -----------------------------------------------
-
-# function of specify decimal places in numbers
-specify_decimal <- function(x, k) format(round(x, k), nsmall=k)
-
-
-```
-
-
-## Case Description
+# Case Description
 
 - Dos cursos de matemáticas de octavo básico, presentan diferencias importantes en sus resultados en una guia de trabajo. Estas guías, son aplicadas como preparación para las evaluación de cierre de semestre. Son versiones muy cortas de cómo lucen las pruebas finales.
 - El contenido de la guía aplicada incluía resolución de problemas (5 items), ejercicios de geometría (4 items), y 4 preguntas de algebra.
 - Ambos cursos son enseñados por el mismo profesor, pero en momentos diferentes de la semana. Un curso tiene clases los Lunes, y el otro curso tiene clases los Viernes. Sin embargo, las pruebas de cierre de trimestre y sus ensayos, son realizadas de forma sistemática los Miércoles.
 - Las diferencias entre las notas obtenidas por ambos cursos desaparecen, cuando las preguntas de algebra son ignoradas.
-- **¿Quizas el curso del Viernes, no alcanzo a revisar los contenidos de algebra?**
+- **¿Quizás el curso del Viernes, no alcanzo a revisar los contenidos de algebra?**
 
 
 # Cargar datos
