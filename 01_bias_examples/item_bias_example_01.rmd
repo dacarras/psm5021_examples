@@ -35,6 +35,14 @@ library(dplyr)
 r4sda::variables_table(data_wide) %>%
 knitr::kable()
 
+
+# ----------------------------------------------- 
+# check data format
+# -----------------------------------------------
+
+dplyr::count(data_wide, u)
+
+
 ```
 
 ## Re-structure data

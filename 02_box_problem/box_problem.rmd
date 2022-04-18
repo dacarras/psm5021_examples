@@ -1,0 +1,285 @@
+---
+title: "Thurstone's Box Problem"
+subtitle: 'EFA & CFA'
+author: 'dacarras'
+output: github_document
+---
+
+# Case Description
+
+- Empleamos la variante del Thurstone's Box Problem de Kaiser & Horst (1975).
+- Los autores generan una base de datos de 10 indicadores, de cuarenta cajas diferentes, agregandoles error aleatorio a las medidas.
+- Sobre esta matriz de datos, se espera ajustar un modelo con tres factores.
+
+
+# Cargar datos
+
+## Abrir datos
+
+```{r , echo=TRUE}
+
+#--------------------------------------------------------------------
+# load data from url
+#--------------------------------------------------------------------
+
+box_data <- read.csv("https://www.evernote.com/shard/s42/sh/d0f20791-c8e5-4627-972e-5c76625f0ffb/695007b60806fd4ecfa7dbb73c67f8d1/res/4ac06b03-0a8e-4c3d-8d57-29f6e71a6598/box_prob.csv")
+
+# ----------------------------------------------- 
+# check data format
+# -----------------------------------------------
+
+library(dplyr)
+r4sda::variables_table(box_data) %>%
+knitr::kable()
+
+
+
+# ----------------------------------------------- 
+# check data format
+# -----------------------------------------------
+
+dplyr::count(box_data, i1)
+
+# ----------------------------------------------- 
+# isolate data from indicators
+# -----------------------------------------------
+
+box_items <- dplyr::select(box_data, i1:i10)
+
+
+# ----------------------------------------------- 
+# display data
+# -----------------------------------------------
+
+knitr::kable(box_items, digits = 2)
+
+
+```
+
+# Dimensionalidad
+
+## Scree test
+
+```{r , echo=TRUE}
+
+#--------------------------------------------------------------------
+# dimensionality
+#--------------------------------------------------------------------
+
+# ----------------------------------------------- 
+# scree test
+# -----------------------------------------------
+
+psych::scree(box_items, factors = FALSE, pc = TRUE, hline = 1)
+
+# Nota: scree test generado sobre los eigenvalues de un 
+#       análisis de componentes principales.
+
+
+# ----------------------------------------------- 
+# scree test
+# -----------------------------------------------
+
+psych::scree(box_items, factors = FALSE, pc = FALSE, hline = 1)
+
+# Nota: scree test generado sobre los eigenvalues de un 
+#       análisis de "principal axis factoring".
+
+
+
+```
+
+## Parallel
+
+```{r , echo=TRUE}
+
+#--------------------------------------------------------------------
+# dimensionality
+#--------------------------------------------------------------------
+
+# ----------------------------------------------- 
+# parallel
+# -----------------------------------------------
+
+psych::fa.parallel(box_items, 
+  fa = "fa", 
+  show.legend = FALSE, 
+  fm = "ml")
+
+```
+
+## MAP
+
+```{r , echo=TRUE}
+
+#--------------------------------------------------------------------
+# dimensionality
+#--------------------------------------------------------------------
+
+# ----------------------------------------------- 
+# traditional output
+# -----------------------------------------------
+
+psych::VSS(x=box_items,fm="mle", plot = FALSE)
+
+
+# ----------------------------------------------- 
+# output as plot
+# -----------------------------------------------
+
+map_out <- psych::VSS(box_items, rotate ="varimax", plot = FALSE)
+
+# extract MAP values and create vector of factors
+map_vector  <- data.frame(map=map_out$map)
+map_factors <- data.frame(factors=c(1:nrow(map_vector)))
+
+# create data for plot
+map_data <- dplyr::bind_cols(map_factors, map_vector)
+
+# get values
+map_value    <- min(map_vector, na.rm = TRUE)
+map_retained <- dplyr::filter(map_data, map == min(map_vector, na.rm=TRUE)) %>% 
+                dplyr::select(factors) %>% 
+                as.numeric()
+
+# plot MAP results
+plot(map_data, 
+  main = 'MAP criteria', 
+  ylab = 'MAP values', 
+  xlab = 'Number of factors', 
+  ylim = c(0,.20), 
+  type = 'p', 
+  col = 'black', 
+  pch=16)
+abline(
+  h = map_value, 
+  v = map_retained, 
+  col = "red", 
+  lty=2, 
+  lwd=1)
+
+```
+
+## EFA
+
+```{r , echo=TRUE}
+
+#--------------------------------------------------------------------
+# dimensionality
+#--------------------------------------------------------------------
+
+# ----------------------------------------------- 
+# exploratory factor analysis
+# -----------------------------------------------
+
+library(psych)
+library(GPArotation)
+efa_fit <- fa(box_items, 
+           fm = "mle", 
+           nfactors = 3, 
+           rotate = "varimax")
+
+# ----------------------------------------------- 
+# exploratory factor analysis
+# -----------------------------------------------
+
+efa_fit
+
+
+
+# ----------------------------------------------- 
+# exploratory factor analysis
+# -----------------------------------------------
+
+library(psych)
+library(GPArotation)
+efa_fit <- fa(box_items, 
+           fm = "mle", 
+           nfactors = 2, 
+           rotate = "varimax")
+
+# ----------------------------------------------- 
+# exploratory factor analysis
+# -----------------------------------------------
+
+efa_fit
+
+```
+
+## CFA
+
+```{r , echo=TRUE}
+
+#--------------------------------------------------------------------
+# dimensionality
+#--------------------------------------------------------------------
+
+# ----------------------------------------------- 
+# confirmatory factor analysis
+# -----------------------------------------------
+
+lavaan_model <- '
+
+axis_x =~ start( 0.01)*i1 
+axis_x =~ start( 0.94)*i2 
+axis_x =~ start(-0.01)*i3 
+axis_x =~ start( 0.90)*i4 
+axis_x =~ start( 0.12)*i5 
+axis_x =~ start( 0.41)*i6 
+axis_x =~ start( 0.82)*i7 
+axis_x =~ start( 0.42)*i8 
+axis_x =~ start( 0.70)*i9 
+axis_x =~ start( 0.83)*i10
+
+axis_y =~ start(0.00)*i1 
+axis_y =~ start(0.21)*i2 
+axis_y =~ start(0.97)*i3 
+axis_y =~ start(0.18)*i4 
+axis_y =~ start(0.85)*i5 
+axis_y =~ start(0.88)*i6 
+axis_y =~ start(0.07)*i7 
+axis_y =~ start(0.42)*i8 
+axis_y =~ start(0.65)*i9 
+axis_y =~ start(0.09)*i10
+
+
+axis_z =~ start( 0.38)*i1 
+axis_z =~ start(-0.18)*i2 
+axis_z =~ start( 0.09)*i3 
+axis_z =~ start( 0.23)*i4 
+axis_z =~ start( 0.42)*i5 
+axis_z =~ start(-0.04)*i6 
+axis_z =~ start( 0.51)*i7 
+axis_z =~ start( 0.78)*i8 
+axis_z =~ start(-0.21)*i9 
+axis_z =~ start( 0.34)*i10
+
+
+axis_x ~~ 0*axis_y
+axis_x ~~ 0*axis_z
+axis_y ~~ 0*axis_z
+
+'
+# ----------------------------------------------- 
+# fit lavaan model
+# -----------------------------------------------
+
+cfa_fit <- lavaan::sem(lavaan_model, 
+            data = box_items,
+            mimic='mplus',
+            estimator = 'MLR')
+
+# ----------------------------------------------- 
+# display results
+# -----------------------------------------------
+
+lavaan::summary(cfa_fit, fit.measures=TRUE, standardized=TRUE, rsquare=TRUE)
+
+
+```
+
+## References
+
+Kaiser, H. F., & Horst, P. (1975). A Score Matrix for Thurstone’s Box Problem. Multivariate Behavioral Research, 10(1), 17–26. http:// doi.org/10.1207/s15327906mbr1001_2
+
+
