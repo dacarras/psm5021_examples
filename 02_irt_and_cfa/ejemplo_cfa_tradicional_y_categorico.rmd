@@ -1,0 +1,638 @@
+---
+title: "Code: ejemplos de CFA"
+subtitle: "clase 11"
+author: "dacarras"
+date: '`r format(Sys.time(), "%a %b %d, %Y")`'
+output: github_document
+---
+
+```{r setup, include=FALSE}
+
+#------------------------------------------------------------------------------
+# setup
+#------------------------------------------------------------------------------
+# resolution
+knitr::opts_chunk$set(dpi=300,fig.width=7)
+
+# knitr option
+knitr::opts_chunk$set(dev = 'png')
+options(knitr.kable.NA = '', digits = 2)
+
+# remove all previous objects
+rm(list = ls())
+
+
+# set appropiate time zone via OlsonNames()
+Sys.setenv(TZ="America/Santiago")
+Sys.getenv("TZ")
+Sys.time()
+
+# fonts
+Sys.setenv(LANG="en_US.UTF-8")
+
+# load main library
+library(dplyr)
+
+
+
+```
+
+# CFA tradicional
+
+- Ejemplo desarollado empleando los datos de Canivez et al., 2009
+
+>Canivez, G. L., Konold, T. R., Collins, J. M., & Wilson, G. (2009). Construct validity of the Wechsler Abbreviated Scale of Intelligence and Wide Range Intelligence Test: Convergent and structural validity. School Psychology Quarterly, 24(4), 252–265. https://doi.org/10.1037/a0018030
+
+- El proposito general del estudio es mostrar que el Wechsler Abbreviated Scale of Intelligence (WISC) y el Wide Range Intelligence Test (WRIT) evalúan las mismas habilidades (i.e., validez convergente).
+
+- Este ejemplo se encuentra desarollado en articulo de Beaujean (2013):
+
+>Beaujean, A. A. (2013). Factor Analysis using R. Practical Assessment, Research and Evaluation, 18(4), 1–11. https://doi.org/10.1177/1548051812471724
+
+## Cargar datos
+
+```{r echo=TRUE}
+
+#------------------------------------------------------------------------------
+# CFA with correlation matrix
+#------------------------------------------------------------------------------
+
+#------------------------------------------------
+# input correlation matrix
+#------------------------------------------------
+
+correlation_input <- '
+1.00
+0.57    1.00
+0.79    0.57     1.00
+0.62    0.65     0.60    1.00
+0.69    0.51     0.70    0.53        1.00
+0.83    0.54     0.74    0.57        0.71     1.00
+0.56    0.59     0.58    0.71        0.65     0.58     1.00     
+0.51    0.66     0.55    0.62        0.51     0.53     0.62     1.00
+'
+
+#------------------------------------------------
+# turn into covariance matrix
+#------------------------------------------------
+
+
+correlation_matrix <- lavaan::getCov(correlation_input)
+
+#------------------------------------------------
+# add standard deviations
+#------------------------------------------------
+
+standard_deviations <- c(
+17.37, 14.49, 17.26, 16.61, 14.77, 16.42, 16.17, 13.92
+)
+
+#------------------------------------------------
+# sample means
+#------------------------------------------------
+
+sample_means <- c(
+97.75, 97.87, 103.81, 99.81, 101.51, 100.63, 101.45, 100.64
+)
+
+#------------------------------------------------
+# add variable names
+#------------------------------------------------
+
+variable_names <- c(
+'wasi_voc',
+'wasi_blc',
+'wasi_sim',
+'wasi_mat',
+'writ_veb',
+'writ_voc',
+'writ_mat',
+'writ_dia'
+)
+
+#------------------------------------------------
+# generate covariance matrix
+#------------------------------------------------
+
+covariance_matrix <- lavaan::cor2cov(
+                     R = correlation_matrix, 
+                     sds = standard_deviations,
+                     names = variable_names)
+
+#------------------------------------------------
+# display table
+#------------------------------------------------
+
+knitr::kable(covariance_matrix, digits = 2)
+
+```
+
+## Modelo de factor común
+
+```{r echo=TRUE}
+
+#------------------------------------------------------------------------------
+# general factor model
+#------------------------------------------------------------------------------
+
+#------------------------------------------------
+# define cfa model
+#------------------------------------------------
+
+lavaan_model <- '
+# measurement model
+g_factor =~ wasi_voc
+g_factor =~ wasi_sim
+g_factor =~ writ_veb
+g_factor =~ writ_voc
+g_factor =~ wasi_blc
+g_factor =~ wasi_mat
+g_factor =~ writ_mat
+g_factor =~ writ_dia
+'
+
+
+#------------------------------------------------
+# fit model
+#------------------------------------------------
+
+library(lavaan)
+cfa_1 <- lavaan::sem(lavaan_model, 
+         sample.cov  = covariance_matrix, 
+         sample.mean = sample_means,
+         sample.nobs = 152,
+         mimic = 'Mplus')
+
+#------------------------------------------------
+# display results
+#------------------------------------------------
+
+lavaan::summary(cfa_1, 
+  fit.measures=TRUE, 
+  standardized=TRUE, 
+  rsquare=TRUE)
+
+
+
+```
+
+## Modelo bidimensional o de dos factores
+
+```{r echo=TRUE}
+
+#------------------------------------------------------------------------------
+# two dimensional model
+#------------------------------------------------------------------------------
+
+#------------------------------------------------
+# define cfa model
+#------------------------------------------------
+
+lavaan_model <- '
+# measurement model
+verb =~ wasi_voc
+verb =~ wasi_sim
+verb =~ writ_veb
+verb =~ writ_voc
+nonv =~ wasi_blc
+nonv =~ wasi_mat
+nonv =~ writ_mat
+nonv =~ writ_dia
+'
+
+
+#------------------------------------------------
+# fit model
+#------------------------------------------------
+
+library(lavaan)
+cfa_2 <- lavaan::sem(lavaan_model, 
+         sample.cov  = covariance_matrix,
+         sample.mean = sample_means, 
+         sample.nobs = 152,
+         mimic = 'Mplus')
+
+#------------------------------------------------
+# display results
+#------------------------------------------------
+
+lavaan::summary(cfa_2, 
+  fit.measures=TRUE, 
+  standardized=TRUE, 
+  rsquare=TRUE)
+
+
+```
+
+## Schmid-Leiman transformation
+
+```{r echo=TRUE}
+
+#------------------------------------------------------------------------------
+# Schmid-Leiman transformation
+#------------------------------------------------------------------------------
+
+psych::schmid(correlation_matrix,nfactors=2)
+
+
+```
+
+## Modelo bidimensional por instrumento
+
+```{r echo=TRUE}
+
+#------------------------------------------------------------------------------
+# two dimensional model by instrument
+#------------------------------------------------------------------------------
+
+#------------------------------------------------
+# define cfa model
+#------------------------------------------------
+
+lavaan_model <- '
+# measurement model
+writ =~ writ_veb
+writ =~ writ_voc
+writ =~ writ_mat
+writ =~ writ_dia
+
+wasi =~ wasi_blc
+wasi =~ wasi_mat
+wasi =~ wasi_voc
+wasi =~ wasi_sim
+
+'
+
+
+#------------------------------------------------
+# fit model
+#------------------------------------------------
+
+library(lavaan)
+cfa_3 <- lavaan::sem(lavaan_model, 
+         sample.cov  = covariance_matrix, 
+         sample.mean = sample_means,
+         sample.nobs = 152,
+         mimic = 'Mplus')
+
+#------------------------------------------------
+# display results
+#------------------------------------------------
+
+lavaan::summary(cfa_3, 
+  fit.measures=TRUE, 
+  standardized=TRUE, 
+  rsquare=TRUE)
+
+
+
+
+```
+
+# CFA con indicadores categóricos
+
+## Cargar datos
+
+```{r echo=TRUE}
+
+#------------------------------------------------------------------------------
+# preparar datos
+#------------------------------------------------------------------------------
+
+#----------------------------------------------------------
+# instalar libreria que contiene los datos
+#----------------------------------------------------------
+
+# devtools::install_github("dacarras/psi2301", force = TRUE)
+
+#----------------------------------------------------------
+# función de recodificación
+#----------------------------------------------------------
+
+recode_likert <- function(x){
+require(dplyr)
+
+rec <- dplyr::case_when(
+       x == 1 ~ 4,
+       x == 2 ~ 3,
+       x == 3 ~ 2,
+       x == 4 ~ 1,
+       )
+
+return(rec)
+}
+
+#----------------------------------------------------------
+# preparar datos para CFA
+#----------------------------------------------------------
+
+set.seed(20221103)
+
+data_model <- psi2301::iccs_09_chl %>%
+              # remover meta data de los datos
+              r4sda::remove_labels() %>%
+              # items de actitudes hacia el propio país
+              mutate(pa1 = recode_likert(IS2P28A)) %>%
+              mutate(pa2 = recode_likert(IS2P28B)) %>%
+              mutate(pa3 = recode_likert(IS2P28C)) %>%
+              mutate(pa4 = recode_likert(IS2P28D)) %>%
+              mutate(pa5 = recode_likert(IS2P28E)) %>%
+              mutate(pa6 = recode_likert(IS2P28F)) %>%
+              mutate(pa7 = recode_likert(IS2P28G)) %>%
+              mutate(pa8 = recode_likert(IS2P28H)) %>%
+              # muestra aleatoria de 500 casos
+              dplyr::sample_n(size = 500, weights = TOTWGTS) %>%
+              mutate(id_i = seq(1:nrow(.))) %>%
+              dplyr::select(id_i, pa1:pa8) %>%
+              dplyr::glimpse()
+
+```
+
+## Descriptivos de los items
+
+```{r , echo=TRUE, warning=FALSE}
+
+#------------------------------------------------------------------------------
+# descriptivos de items
+#------------------------------------------------------------------------------
+
+#------------------------------------------------
+# sparsity check
+#------------------------------------------------
+
+data_model %>%
+dplyr::select(pa1:pa8) %>%
+r4sda::wide_resp() %>%
+knitr::kable(., digits = 2)
+
+```
+
+## Modelo 1: CFA tradicional
+
+```{r , echo=TRUE, warning=FALSE}
+
+#------------------------------------------------------------------------------
+# fit CFA
+#------------------------------------------------------------------------------
+
+#------------------------------------------------
+# model
+#------------------------------------------------
+
+library(lavaan)
+lavaan_model <-
+'
+nat =~ pa1
+nat =~ pa2
+nat =~ pa3
+nat =~ pa4
+nat =~ pa5
+nat =~ pa6
+nat =~ pa7
+nat =~ pa8
+'
+
+
+#------------------------------------------------
+# fit model
+#------------------------------------------------
+
+lavaan_fit <- lavaan::sem(lavaan_model, 
+              data = data_model, 
+              mimic='mplus',
+              estimator = 'MLR')
+
+#------------------------------------------------
+# get summary
+#------------------------------------------------
+
+summary(lavaan_fit, fit.measures=TRUE, standardized=TRUE, rsquare=TRUE)
+
+```
+
+## Modelo 2: CFA ordinal
+
+```{r , echo=TRUE, warning=FALSE}
+
+#------------------------------------------------------------------------------
+# fit CFA
+#------------------------------------------------------------------------------
+
+#------------------------------------------------
+# model
+#------------------------------------------------
+
+library(lavaan)
+lavaan_model <-
+'
+nat =~ pa1
+nat =~ pa2
+nat =~ pa3
+nat =~ pa4
+nat =~ pa5
+nat =~ pa6
+nat =~ pa7
+nat =~ pa8
+'
+
+#------------------------------------------------
+# items
+#------------------------------------------------
+
+ordered_items <- data_model %>%
+                 dplyr::select(pa1:pa8) %>%
+                 names()
+
+#------------------------------------------------
+# fit model
+#------------------------------------------------
+
+
+lavaan_fit <- lavaan::sem(lavaan_model, 
+              data = data_model, 
+              mimic='mplus',
+              ordered =  ordered_items,
+              estimator = 'WLSMV')
+
+#------------------------------------------------
+# get summary
+#------------------------------------------------
+
+summary(lavaan_fit, fit.measures=TRUE, standardized=TRUE, rsquare=TRUE)
+
+```
+
+## Modelo 3: selección de items de IEA
+
+```{r , echo=TRUE, warning=FALSE}
+
+#------------------------------------------------------------------------------
+# fit CFA
+#------------------------------------------------------------------------------
+
+#------------------------------------------------
+# model
+#------------------------------------------------
+
+library(lavaan)
+lavaan_model <-
+'
+nat =~ pa1
+nat =~ pa2
+nat =~ pa3
+nat =~ pa4
+# nat =~ pa5
+nat =~ pa6
+nat =~ pa7
+nat =~ pa8
+'
+
+#------------------------------------------------
+# items
+#------------------------------------------------
+
+ordered_items <- data_model %>%
+                 dplyr::select(pa1:pa8) %>%
+                 names()
+
+#------------------------------------------------
+# fit model
+#------------------------------------------------
+
+
+lavaan_fit <- lavaan::sem(lavaan_model, 
+              data = data_model, 
+              mimic='mplus',
+              ordered =  ordered_items,
+              estimator = 'WLSMV')
+
+#------------------------------------------------
+# get summary
+#------------------------------------------------
+
+summary(lavaan_fit, fit.measures=TRUE, standardized=TRUE, rsquare=TRUE)
+
+```
+
+## Modelo 4: items de patriotismo
+
+```{r , echo=TRUE, warning=FALSE}
+
+#------------------------------------------------------------------------------
+# fit CFA
+#------------------------------------------------------------------------------
+
+#------------------------------------------------
+# model
+#------------------------------------------------
+
+library(lavaan)
+lavaan_model <-
+'
+nat =~ pa1
+nat =~ pa3
+nat =~ pa4
+nat =~ pa6
+'
+
+#------------------------------------------------
+# items
+#------------------------------------------------
+
+ordered_items <- data_model %>%
+                 dplyr::select(pa1:pa8) %>%
+                 names()
+
+#------------------------------------------------
+# fit model
+#------------------------------------------------
+
+
+lavaan_fit <- lavaan::sem(lavaan_model, 
+              data = data_model, 
+              mimic='mplus',
+              ordered =  ordered_items,
+              estimator = 'WLSMV')
+
+#------------------------------------------------
+# get summary
+#------------------------------------------------
+
+summary(lavaan_fit, fit.measures=TRUE, standardized=TRUE, rsquare=TRUE)
+
+```
+
+## Extracción de realizaciones del modelo
+
+```{r , echo=TRUE, warning=FALSE}
+
+#------------------------------------------------------------------------------
+# extraer realizaciones del modelo
+#------------------------------------------------------------------------------
+
+#------------------------------------------------
+# factor scores
+#------------------------------------------------
+
+
+lav_theta <- tibble::tibble(
+             patr = as.numeric(lavaan::lavPredict(lavaan_fit, method = 'EBM', type = 'lv')),
+             id_i = lavaan_fit@Data@case.idx[[1]]) %>%
+             dplyr::select(id_i, patr) %>%
+             dplyr::glimpse()
+
+#------------------------------------------------
+# data para plot
+#------------------------------------------------
+
+data_plot  <- data_model %>%
+              mutate(sum_score = r4sda::sum_score(pa1, pa3, pa4, pa6)) %>%
+              dplyr::left_join(., lav_theta, by = 'id_i') %>%
+              dplyr::select(pa1, pa3, pa4, pa6, patr, sum_score) %>%
+              na.omit() %>%
+              dplyr::glimpse()
+
+
+#------------------------------------------------
+# scatter entre eta y sum score
+#------------------------------------------------
+
+library(ggplot2)
+scatter_plot <- data_plot %>%
+dplyr::select(
+sum_score,
+patr
+) %>%
+na.omit() %>%
+ggplot(., aes(
+  y = sum_score, 
+  x = patr
+  )) + geom_point(
+      shape = 20,
+      aes(alpha = .5),
+      size = 3,
+      colour = 'grey20',
+      show.legend = FALSE
+      ) + theme_classic() +
+  scale_y_continuous(
+    name = bquote("sum score" ~ theta[p]),
+    limits = c(4, 16),
+    breaks = seq(4, 16,1)) +
+  scale_x_continuous(
+    name = bquote("GRM scores" ~ theta[p]),
+    limits = c(-3, 1),
+    breaks = seq(-3, 1,1))
+
+
+ggExtra::ggMarginal(scatter_plot, type = "histogram")
+
+#------------------------------------------------
+# tabla de patrones de respuesta
+#------------------------------------------------
+
+arrange(data_plot, patr) %>%
+knitr::kable()
+
+
+```
+

@@ -1,7 +1,7 @@
 Rasch model with item bias
 ================
 dacarras
-Mon May 17 16:48:08 2021
+Mon Nov 07 14:29:28 2022
 
 # Case Description
 
@@ -19,7 +19,7 @@ Mon May 17 16:48:08 2021
     Miércoles.
 -   Las diferencias entre las notas obtenidas por ambos cursos
     desaparecen, cuando las preguntas de algebra son ignoradas.
--   **¿Quizas el curso del Viernes, no alcanzo a revisar los contenidos
+-   **¿Quizás el curso del Viernes, no alcanzo a revisar los contenidos
     de algebra?**
 
 # Cargar datos
@@ -42,22 +42,34 @@ r4sda::variables_table(data_wide) %>%
 knitr::kable()
 ```
 
-| variable | type | values                                                 | labels                             |
-|:---------|:-----|:-------------------------------------------------------|:-----------------------------------|
-| i01      | dbl  | , 1, 1, 0, 0, 1, 0, 1, 1, 1, 1, 1, 0, 0, 1, 0, 1, 1, … | problem 1                          |
-| i02      | dbl  | , 1, 1, 0, 1, 1, 1, 1, 0, 1, 1, 1, 1, 0, 1, 1, 1, 1, … | problem 2                          |
-| i03      | dbl  | , 1, 1, 1, 0, 1, 1, 1, 0, 1, 1, 1, 1, 0, 0, 1, 1, 1, … | problem 3                          |
-| i04      | dbl  | , 1, 0, 1, 1, 1, 1, 1, 0, 1, 1, 1, 1, 1, 1, 0, 1, 1, … | problem 4                          |
-| i05      | dbl  | , 0, 1, 1, 0, 1, 1, 1, 0, 1, 1, 1, 1, 0, 0, 1, 0, 1, … | problem 5                          |
-| i06      | dbl  | , 0, 1, 0, 0, 1, 1, 1, 0, 1, 1, 1, 0, 1, 0, 0, 1, 0, … | geometry 1                         |
-| i07      | dbl  | , 1, 0, 0, 0, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 1, 1, 1, … | geometry 2                         |
-| i08      | dbl  | , 0, 1, 1, 0, 1, 1, 1, 1, 1, 0, 1, 0, 0, 1, 1, 0, 1, … | geometry 3                         |
-| i09      | dbl  | , 0, 0, 0, 0, 1, 0, 1, 0, 1, 1, 1, 0, 0, 0, 0, 0, 1, … | geometry 4                         |
-| i10      | dbl  | , 0, 0, 0, 0, 1, 1, 0, 0, 1, 1, 1, 1, 0, 0, 0, 0, 1, … | algebra 1                          |
-| i11      | dbl  | , 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 0, 0, 0, 0, 0, 0, … | algebra 2                          |
-| i12      | dbl  | , 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 1, 0, 0, 0, 0, 1, … | algebra 3                          |
-| i13      | dbl  | , 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, … | algebra 4                          |
-| u        | dbl  | , 0, 0, 1, 1, 0, 0, 0, 0, 1, 0, 0, 1, 0, 0, 0, 0, 1, … | section (monday == 1, friday == 0) |
+| variable | type | values                       | labels                             |
+|:---------|:-----|:-----------------------------|:-----------------------------------|
+| i01      | dbl  | 1, 1, 1, 0, 0, 1, 0, 1, 1, … | problem 1                          |
+| i02      | dbl  | 1, 1, 1, 1, 0, 1, 1, 1, 1, … | problem 2                          |
+| i03      | dbl  | 1, 1, 1, 1, 0, 0, 1, 1, 1, … | problem 3                          |
+| i04      | dbl  | 1, 1, 1, 1, 1, 1, 0, 1, 1, … | problem 4                          |
+| i05      | dbl  | 1, 1, 1, 1, 0, 0, 1, 0, 1, … | problem 5                          |
+| i06      | dbl  | 1, 1, 1, 0, 1, 0, 0, 1, 0, … | geometry 1                         |
+| i07      | dbl  | 1, 1, 0, 0, 0, 0, 1, 1, 1, … | geometry 2                         |
+| i08      | dbl  | 1, 0, 1, 0, 0, 1, 1, 0, 1, … | geometry 3                         |
+| i09      | dbl  | 1, 1, 1, 0, 0, 0, 0, 0, 1, … | geometry 4                         |
+| i10      | dbl  | 1, 1, 1, 1, 0, 0, 0, 0, 1, … | algebra 1                          |
+| i11      | dbl  | 1, 1, 1, 0, 0, 0, 0, 0, 0, … | algebra 2                          |
+| i12      | dbl  | 1, 0, 0, 1, 0, 0, 0, 0, 1, … | algebra 3                          |
+| i13      | dbl  | 0, 0, 0, 0, 0, 0, 0, 0, 1, … | algebra 4                          |
+| u        | dbl  | 1, 0, 0, 1, 0, 0, 0, 0, 1, … | section (monday == 1, friday == 0) |
+
+``` r
+# ----------------------------------------------- 
+# check data format
+# -----------------------------------------------
+
+dplyr::count(data_wide, u)
+```
+
+    ##   u  n
+    ## 1 0 62
+    ## 2 1 18
 
 ## Re-structure data
 
@@ -81,10 +93,10 @@ data_stack <- data_wide %>%
 
     ## Rows: 1,040
     ## Columns: 4
-    ## $ u    [3m[38;5;246m<dbl>[39m[23m 1, 0, 0, 1, 0, 0, 0, 1, 1, 0, 0, 0, 0, 1, 0, 0, 1, 0, 0, 0, 0, 1,…
-    ## $ id_i [3m[38;5;246m<int>[39m[23m 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19…
-    ## $ item [3m[38;5;246m<chr>[39m[23m "i01", "i01", "i01", "i01", "i01", "i01", "i01", "i01", "i01", "i…
-    ## $ resp [3m[38;5;246m<dbl>[39m[23m 1, 1, 0, 1, 1, 1, 1, 0, 0, 1, 0, 1, 1, 1, 1, 1, 0, 0, 1, 0, 1, 1,…
+    ## $ u    <dbl> 1, 0, 0, 1, 0, 0, 0, 1, 1, 0, 0, 0, 0, 1, 0, 0, 1, 0, 0, 0, 0, 1,…
+    ## $ id_i <int> 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19…
+    ## $ item <chr> "i01", "i01", "i01", "i01", "i01", "i01", "i01", "i01", "i01", "i…
+    ## $ resp <dbl> 1, 1, 0, 1, 1, 1, 1, 0, 0, 1, 0, 1, 1, 1, 1, 1, 0, 0, 1, 0, 1, 1,…
 
 # Item bias with the logistic method
 
@@ -139,7 +151,7 @@ difR::difLogistic(
     ## 
     ## Signif. codes: 0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1  
     ## 
-    ## Detection threshold: 3.8 (significance level: 0.05)
+    ## Detection threshold: 3.8415 (significance level: 0.05)
     ## 
     ## Items detected as uniform DIF items:
     ##     
@@ -382,7 +394,7 @@ dplyr::pull()
 d0-d1
 ```
 
-    ## [1] 9.9
+    ## [1] 9.870616
 
 ``` r
 # ----------------------------------------------- 
@@ -393,7 +405,7 @@ DescTools::PseudoR2(m1, "Nagel") - DescTools::PseudoR2(m0, "Nagel")
 ```
 
     ## Nagelkerke 
-    ##       0.11
+    ##  0.1071505
 
 ## Item bias with anchors
 
@@ -446,7 +458,7 @@ difR::difLogistic(
     ## 
     ## Signif. codes: 0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1  
     ## 
-    ## Detection threshold: 3.8 (significance level: 0.05)
+    ## Detection threshold: 3.8415 (significance level: 0.05)
     ## 
     ## Items detected as uniform DIF items:
     ##     
@@ -543,7 +555,7 @@ plot(dif_anchored, plot = "itemCurve", item = 13, itemFit = "null")
 
 ## Fit Rasch model as a mixed model
 
-*l**n*\[*P**r*(*y*<sub>*i**p*</sub> = 1)\] = *θ*<sub>.*p*</sub> − *δ*<sub>1 − 13</sub>*i**t**e**m*
+$$ln[Pr(y_{ip} = 1)] = \theta_{.p} - \delta_{1-13}item$$
 
 ``` r
 #--------------------------------------------------------------------
@@ -560,28 +572,28 @@ broom.mixed::tidy(glm_00) %>%
 knitr::kable(., digits = 2)
 ```
 
-| effect    | group | term              | estimate | std.error | statistic | p.value |
-|:----------|:------|:------------------|---------:|----------:|----------:|--------:|
-| fixed     |       | itemi01           |     1.69 |      0.35 |      4.82 |    0.00 |
-| fixed     |       | itemi02           |     1.51 |      0.34 |      4.41 |    0.00 |
-| fixed     |       | itemi03           |     0.94 |      0.32 |      2.92 |    0.00 |
-| fixed     |       | itemi04           |     1.42 |      0.34 |      4.20 |    0.00 |
-| fixed     |       | itemi05           |     0.57 |      0.31 |      1.82 |    0.07 |
-| fixed     |       | itemi06           |     0.29 |      0.31 |      0.92 |    0.36 |
-| fixed     |       | itemi07           |     0.22 |      0.31 |      0.70 |    0.48 |
-| fixed     |       | itemi08           |    -0.27 |      0.31 |     -0.87 |    0.38 |
-| fixed     |       | itemi09           |    -0.56 |      0.31 |     -1.77 |    0.08 |
-| fixed     |       | itemi10           |    -0.34 |      0.31 |     -1.10 |    0.27 |
-| fixed     |       | itemi11           |    -0.70 |      0.32 |     -2.22 |    0.03 |
-| fixed     |       | itemi12           |    -2.33 |      0.40 |     -5.89 |    0.00 |
-| fixed     |       | itemi13           |    -1.50 |      0.34 |     -4.38 |    0.00 |
-| ran\_pars | id\_i | sd\_\_(Intercept) |     1.43 |           |           |         |
+| effect   | group | term              | estimate | std.error | statistic | p.value |
+|:---------|:------|:------------------|---------:|----------:|----------:|--------:|
+| fixed    | NA    | itemi01           |     1.69 |      0.35 |      4.82 |    0.00 |
+| fixed    | NA    | itemi02           |     1.51 |      0.34 |      4.41 |    0.00 |
+| fixed    | NA    | itemi03           |     0.94 |      0.32 |      2.92 |    0.00 |
+| fixed    | NA    | itemi04           |     1.42 |      0.34 |      4.20 |    0.00 |
+| fixed    | NA    | itemi05           |     0.57 |      0.31 |      1.82 |    0.07 |
+| fixed    | NA    | itemi06           |     0.29 |      0.31 |      0.92 |    0.36 |
+| fixed    | NA    | itemi07           |     0.22 |      0.31 |      0.70 |    0.48 |
+| fixed    | NA    | itemi08           |    -0.27 |      0.31 |     -0.87 |    0.38 |
+| fixed    | NA    | itemi09           |    -0.56 |      0.31 |     -1.77 |    0.08 |
+| fixed    | NA    | itemi10           |    -0.34 |      0.31 |     -1.10 |    0.27 |
+| fixed    | NA    | itemi11           |    -0.70 |      0.32 |     -2.22 |    0.03 |
+| fixed    | NA    | itemi12           |    -2.33 |      0.40 |     -5.89 |    0.00 |
+| fixed    | NA    | itemi13           |    -1.50 |      0.34 |     -4.38 |    0.00 |
+| ran_pars | id_i  | sd\_\_(Intercept) |     1.43 |        NA |        NA |      NA |
 
 # Item bias as mixed model
 
 ## Fit Rasch model as a mixed model
 
-*l**n*\[*P**r*(*y*<sub>*i**p*</sub> = 1)\] = *θ*<sub>.*p*</sub> − *δ*<sub>1 − 13</sub>*i**t**e**m*
+$$ln[Pr(y_{ip} = 1)] = \theta_{.p} - \delta_{1-13}item$$
 
 ``` r
 #--------------------------------------------------------------------
@@ -598,26 +610,26 @@ broom.mixed::tidy(glm_00) %>%
 knitr::kable(., digits = 2)
 ```
 
-| effect    | group | term              | estimate | std.error | statistic | p.value |
-|:----------|:------|:------------------|---------:|----------:|----------:|--------:|
-| fixed     |       | itemi01           |     1.69 |      0.35 |      4.82 |    0.00 |
-| fixed     |       | itemi02           |     1.51 |      0.34 |      4.41 |    0.00 |
-| fixed     |       | itemi03           |     0.94 |      0.32 |      2.92 |    0.00 |
-| fixed     |       | itemi04           |     1.42 |      0.34 |      4.20 |    0.00 |
-| fixed     |       | itemi05           |     0.57 |      0.31 |      1.82 |    0.07 |
-| fixed     |       | itemi06           |     0.29 |      0.31 |      0.92 |    0.36 |
-| fixed     |       | itemi07           |     0.22 |      0.31 |      0.70 |    0.48 |
-| fixed     |       | itemi08           |    -0.27 |      0.31 |     -0.87 |    0.38 |
-| fixed     |       | itemi09           |    -0.56 |      0.31 |     -1.77 |    0.08 |
-| fixed     |       | itemi10           |    -0.34 |      0.31 |     -1.10 |    0.27 |
-| fixed     |       | itemi11           |    -0.70 |      0.32 |     -2.22 |    0.03 |
-| fixed     |       | itemi12           |    -2.33 |      0.40 |     -5.89 |    0.00 |
-| fixed     |       | itemi13           |    -1.50 |      0.34 |     -4.38 |    0.00 |
-| ran\_pars | id\_i | sd\_\_(Intercept) |     1.43 |           |           |         |
+| effect   | group | term              | estimate | std.error | statistic | p.value |
+|:---------|:------|:------------------|---------:|----------:|----------:|--------:|
+| fixed    | NA    | itemi01           |     1.69 |      0.35 |      4.82 |    0.00 |
+| fixed    | NA    | itemi02           |     1.51 |      0.34 |      4.41 |    0.00 |
+| fixed    | NA    | itemi03           |     0.94 |      0.32 |      2.92 |    0.00 |
+| fixed    | NA    | itemi04           |     1.42 |      0.34 |      4.20 |    0.00 |
+| fixed    | NA    | itemi05           |     0.57 |      0.31 |      1.82 |    0.07 |
+| fixed    | NA    | itemi06           |     0.29 |      0.31 |      0.92 |    0.36 |
+| fixed    | NA    | itemi07           |     0.22 |      0.31 |      0.70 |    0.48 |
+| fixed    | NA    | itemi08           |    -0.27 |      0.31 |     -0.87 |    0.38 |
+| fixed    | NA    | itemi09           |    -0.56 |      0.31 |     -1.77 |    0.08 |
+| fixed    | NA    | itemi10           |    -0.34 |      0.31 |     -1.10 |    0.27 |
+| fixed    | NA    | itemi11           |    -0.70 |      0.32 |     -2.22 |    0.03 |
+| fixed    | NA    | itemi12           |    -2.33 |      0.40 |     -5.89 |    0.00 |
+| fixed    | NA    | itemi13           |    -1.50 |      0.34 |     -4.38 |    0.00 |
+| ran_pars | id_i  | sd\_\_(Intercept) |     1.43 |        NA |        NA |      NA |
 
 ## Fit Rasch model as a latent regression
 
-*l**n*\[*P**r*(*y*<sub>*i**p*</sub> = 1)\] = *θ*<sub>.*p*</sub> − *δ*<sub>1 − 13</sub>*i**t**e**m* + *β*<sub>.*p*</sub>*u*<sub>.*p*</sub>
+$$ln[Pr(y_{ip} = 1)] = \theta_{.p} - \delta_{1-13}item + \beta_{.p}u_{.p}$$
 
 ``` r
 #--------------------------------------------------------------------
@@ -639,27 +651,27 @@ broom.mixed::tidy(glm_01) %>%
 knitr::kable(., digits = 2)
 ```
 
-| effect    | group | term              | estimate | std.error | statistic | p.value |
-|:----------|:------|:------------------|---------:|----------:|----------:|--------:|
-| fixed     |       | itemi01           |     1.47 |      0.36 |      4.12 |    0.00 |
-| fixed     |       | itemi02           |     1.29 |      0.35 |      3.70 |    0.00 |
-| fixed     |       | itemi03           |     0.72 |      0.33 |      2.19 |    0.03 |
-| fixed     |       | itemi04           |     1.20 |      0.35 |      3.48 |    0.00 |
-| fixed     |       | itemi05           |     0.35 |      0.32 |      1.10 |    0.27 |
-| fixed     |       | itemi06           |     0.07 |      0.32 |      0.22 |    0.83 |
-| fixed     |       | itemi07           |     0.00 |      0.32 |      0.00 |    1.00 |
-| fixed     |       | itemi08           |    -0.49 |      0.32 |     -1.52 |    0.13 |
-| fixed     |       | itemi09           |    -0.77 |      0.33 |     -2.38 |    0.02 |
-| fixed     |       | itemi10           |    -0.56 |      0.32 |     -1.73 |    0.08 |
-| fixed     |       | itemi11           |    -0.92 |      0.33 |     -2.80 |    0.01 |
-| fixed     |       | itemi12           |    -2.55 |      0.41 |     -6.26 |    0.00 |
-| fixed     |       | itemi13           |    -1.72 |      0.36 |     -4.84 |    0.00 |
-| fixed     |       | u                 |     0.97 |      0.42 |      2.33 |    0.02 |
-| ran\_pars | id\_i | sd\_\_(Intercept) |     1.37 |           |           |         |
+| effect   | group | term              | estimate | std.error | statistic | p.value |
+|:---------|:------|:------------------|---------:|----------:|----------:|--------:|
+| fixed    | NA    | itemi01           |     1.47 |      0.36 |      4.12 |    0.00 |
+| fixed    | NA    | itemi02           |     1.29 |      0.35 |      3.70 |    0.00 |
+| fixed    | NA    | itemi03           |     0.72 |      0.33 |      2.19 |    0.03 |
+| fixed    | NA    | itemi04           |     1.20 |      0.35 |      3.48 |    0.00 |
+| fixed    | NA    | itemi05           |     0.35 |      0.32 |      1.10 |    0.27 |
+| fixed    | NA    | itemi06           |     0.07 |      0.32 |      0.22 |    0.83 |
+| fixed    | NA    | itemi07           |     0.00 |      0.32 |      0.00 |    1.00 |
+| fixed    | NA    | itemi08           |    -0.49 |      0.32 |     -1.52 |    0.13 |
+| fixed    | NA    | itemi09           |    -0.77 |      0.33 |     -2.38 |    0.02 |
+| fixed    | NA    | itemi10           |    -0.56 |      0.32 |     -1.73 |    0.08 |
+| fixed    | NA    | itemi11           |    -0.92 |      0.33 |     -2.80 |    0.01 |
+| fixed    | NA    | itemi12           |    -2.55 |      0.41 |     -6.26 |    0.00 |
+| fixed    | NA    | itemi13           |    -1.72 |      0.36 |     -4.84 |    0.00 |
+| fixed    | NA    | u                 |     0.97 |      0.42 |      2.33 |    0.02 |
+| ran_pars | id_i  | sd\_\_(Intercept) |     1.37 |        NA |        NA |      NA |
 
 ## Fit Rasch model as a latent regression including the DIF effects
 
-*l**n*\[*P**r*(*y*<sub>*i**p*</sub> = 1)\] = *θ*<sub>.*p*</sub> − *δ*<sub>1 − 13</sub>*i**t**e**m* + *β*<sub>.*p*</sub>*u*<sub>.*p*</sub> + *γ*<sub>*i**p*</sub>(*i**t**e**m*<sub>*i*.</sub>*u*<sub>.*p*</sub>)
+$$ln[Pr(y_{ip} = 1)] = \theta_{.p} - \delta_{1-13}item + \beta_{.p}u_{.p} + \gamma_{ip}(item_{i.}u_{.p})$$
 
 ``` r
 #--------------------------------------------------------------------
@@ -681,35 +693,35 @@ broom.mixed::tidy(glm_02) %>%
 knitr::kable(., digits = 2)
 ```
 
-| effect    | group | term              | estimate | std.error | statistic | p.value |
-|:----------|:------|:------------------|---------:|----------:|----------:|--------:|
-| fixed     |       | itemi01           |     1.80 |      0.41 |      4.44 |    0.00 |
-| fixed     |       | itemi02           |     1.34 |      0.38 |      3.52 |    0.00 |
-| fixed     |       | itemi03           |     0.83 |      0.36 |      2.29 |    0.02 |
-| fixed     |       | itemi04           |     1.24 |      0.38 |      3.29 |    0.00 |
-| fixed     |       | itemi05           |     0.55 |      0.36 |      1.55 |    0.12 |
-| fixed     |       | itemi06           |     0.37 |      0.36 |      1.03 |    0.30 |
-| fixed     |       | itemi07           |     0.09 |      0.35 |      0.26 |    0.79 |
-| fixed     |       | itemi08           |    -0.54 |      0.36 |     -1.51 |    0.13 |
-| fixed     |       | itemi09           |    -0.64 |      0.36 |     -1.78 |    0.08 |
-| fixed     |       | itemi10           |    -0.84 |      0.37 |     -2.29 |    0.02 |
-| fixed     |       | itemi11           |    -1.14 |      0.38 |     -3.04 |    0.00 |
-| fixed     |       | itemi12           |    -3.24 |      0.56 |     -5.78 |    0.00 |
-| fixed     |       | itemi13           |    -2.43 |      0.46 |     -5.28 |    0.00 |
-| fixed     |       | u                 |    -0.48 |      0.81 |     -0.60 |    0.55 |
-| fixed     |       | itemi02:u         |     1.23 |      1.05 |      1.18 |    0.24 |
-| fixed     |       | itemi03:u         |     0.91 |      0.98 |      0.94 |    0.35 |
-| fixed     |       | itemi04:u         |     1.33 |      1.04 |      1.28 |    0.20 |
-| fixed     |       | itemi05:u         |     0.53 |      0.95 |      0.55 |    0.58 |
-| fixed     |       | itemi06:u         |     0.10 |      0.94 |      0.11 |    0.92 |
-| fixed     |       | itemi07:u         |     0.99 |      0.95 |      1.04 |    0.30 |
-| fixed     |       | itemi08:u         |     1.62 |      0.95 |      1.70 |    0.09 |
-| fixed     |       | itemi09:u         |     0.81 |      0.95 |      0.85 |    0.40 |
-| fixed     |       | itemi10:u         |     2.58 |      0.98 |      2.63 |    0.01 |
-| fixed     |       | itemi11:u         |     2.23 |      0.96 |      2.31 |    0.02 |
-| fixed     |       | itemi12:u         |     3.10 |      1.05 |      2.94 |    0.00 |
-| fixed     |       | itemi13:u         |     3.51 |      1.00 |      3.50 |    0.00 |
-| ran\_pars | id\_i | sd\_\_(Intercept) |     1.44 |           |           |         |
+| effect   | group | term              | estimate | std.error | statistic | p.value |
+|:---------|:------|:------------------|---------:|----------:|----------:|--------:|
+| fixed    | NA    | itemi01           |     1.80 |      0.41 |      4.44 |    0.00 |
+| fixed    | NA    | itemi02           |     1.34 |      0.38 |      3.52 |    0.00 |
+| fixed    | NA    | itemi03           |     0.83 |      0.36 |      2.29 |    0.02 |
+| fixed    | NA    | itemi04           |     1.24 |      0.38 |      3.29 |    0.00 |
+| fixed    | NA    | itemi05           |     0.55 |      0.36 |      1.55 |    0.12 |
+| fixed    | NA    | itemi06           |     0.37 |      0.36 |      1.03 |    0.30 |
+| fixed    | NA    | itemi07           |     0.09 |      0.35 |      0.26 |    0.79 |
+| fixed    | NA    | itemi08           |    -0.54 |      0.36 |     -1.51 |    0.13 |
+| fixed    | NA    | itemi09           |    -0.64 |      0.36 |     -1.78 |    0.08 |
+| fixed    | NA    | itemi10           |    -0.84 |      0.37 |     -2.29 |    0.02 |
+| fixed    | NA    | itemi11           |    -1.14 |      0.38 |     -3.04 |    0.00 |
+| fixed    | NA    | itemi12           |    -3.24 |      0.56 |     -5.78 |    0.00 |
+| fixed    | NA    | itemi13           |    -2.43 |      0.46 |     -5.28 |    0.00 |
+| fixed    | NA    | u                 |    -0.48 |      0.81 |     -0.60 |    0.55 |
+| fixed    | NA    | itemi02:u         |     1.23 |      1.05 |      1.18 |    0.24 |
+| fixed    | NA    | itemi03:u         |     0.91 |      0.98 |      0.94 |    0.35 |
+| fixed    | NA    | itemi04:u         |     1.33 |      1.04 |      1.28 |    0.20 |
+| fixed    | NA    | itemi05:u         |     0.53 |      0.95 |      0.55 |    0.58 |
+| fixed    | NA    | itemi06:u         |     0.10 |      0.94 |      0.11 |    0.92 |
+| fixed    | NA    | itemi07:u         |     0.99 |      0.95 |      1.04 |    0.30 |
+| fixed    | NA    | itemi08:u         |     1.62 |      0.95 |      1.70 |    0.09 |
+| fixed    | NA    | itemi09:u         |     0.81 |      0.95 |      0.85 |    0.40 |
+| fixed    | NA    | itemi10:u         |     2.58 |      0.98 |      2.63 |    0.01 |
+| fixed    | NA    | itemi11:u         |     2.23 |      0.96 |      2.31 |    0.02 |
+| fixed    | NA    | itemi12:u         |     3.10 |      1.05 |      2.94 |    0.00 |
+| fixed    | NA    | itemi13:u         |     3.51 |      1.00 |      3.50 |    0.00 |
+| ran_pars | id_i  | sd\_\_(Intercept) |     1.44 |        NA |        NA |      NA |
 
 ## Compare fitted models
 
@@ -774,6 +786,7 @@ texreg::screenreg(list(glm_00, glm_01, glm_02),
 ## Commented output
 
 ``` text
+
 =================================================================================
                        Model 1             Model 2             Model 3           
 ---------------------------------------------------------------------------------

@@ -1,0 +1,750 @@
+---
+title: "Code: ejemplos de IRT"
+subtitle: "clase 11"
+author: "dacarras"
+date: '`r format(Sys.time(), "%a %b %d, %Y")`'
+output: github_document
+---
+
+```{r setup, include=FALSE}
+
+#------------------------------------------------------------------------------
+# setup
+#------------------------------------------------------------------------------
+# resolution
+knitr::opts_chunk$set(dpi=300,fig.width=7)
+
+# knitr option
+knitr::opts_chunk$set(dev = 'png')
+options(knitr.kable.NA = '', digits = 2)
+
+# remove all previous objects
+rm(list = ls())
+
+
+# set appropiate time zone via OlsonNames()
+Sys.setenv(TZ="America/Santiago")
+Sys.getenv("TZ")
+Sys.time()
+
+# fonts
+Sys.setenv(LANG="en_US.UTF-8")
+
+# load main library
+library(dplyr)
+
+
+
+```
+
+## `r` IRT with lme4
+
+```{r, eval = TRUE}
+
+# ----------------------------------------------- 
+# read data
+# -----------------------------------------------
+
+data_resp <- readRDS('taller_4b.rds')
+
+# ----------------------------------------------- 
+# re-structure data
+# -----------------------------------------------
+
+library(dplyr)
+data_stack <- data_resp %>%
+              # create a unique case id
+              mutate(id_i = seq(1:nrow(.))) %>%
+              # re-estructure data as stacked
+              tidyr::gather('item', 'resp', -sex, -id_i) %>%
+              # re-arrange cases
+              arrange(id_i, item) %>%
+              dplyr::glimpse()
+
+#--------------------------------------------------------------------
+# fit rasch model
+#--------------------------------------------------------------------
+
+glm_00 <- lme4::glmer(
+          resp ~ -1 + item + (1|id_i), # specify model formula
+          data = data_stack,           # specify data
+          family = binomial('logit'),  # specifying logit link
+          nAGQ = 15)                   # number of quadrature points
+
+# Note: the `-1` removes the intercept of the model.
+#       It allows to include all items instead of using an intercept.
+
+# ----------------------------------------------- 
+# display results
+# -----------------------------------------------
+
+broom.mixed::tidy(glm_00) %>%
+knitr::kable(., digits = 2)
+
+
+# note: this is a Rasch like model, 
+#       with logit link, with reverse item difficulties.
+
+# ----------------------------------------------- 
+# extract theta
+# -----------------------------------------------
+
+glm_theta <- tibble::as_tibble(lme4::ranef(glm_00)) %>%
+             dplyr::filter(term == '(Intercept)') %>%
+             mutate(id_i = as.numeric(as.character(grp))) %>%
+             mutate(theta = condval) %>%
+             dplyr::select(id_i, theta) %>%
+             rename(glm = theta) %>%
+             dplyr::glimpse()
+
+
+```
+
+## `r` IRT with TAM
+
+```{r, eval = TRUE}
+
+# ----------------------------------------------- 
+# read data
+# -----------------------------------------------
+
+data_resp <- readRDS('taller_4b.rds')
+
+# ----------------------------------------------- 
+# re-structure data
+# -----------------------------------------------
+
+library(dplyr)
+data_items <- data_resp %>%
+              # create a unique case id
+              mutate(id_i = seq(1:nrow(.))) %>%
+              # select items
+              dplyr::select(d01:d16) %>%
+              dplyr::glimpse()
+
+data_id  <- data_resp %>%
+              # create a unique case id
+              mutate(id_i = seq(1:nrow(.))) %>%
+              # select items
+              dplyr::select(id_i) %>%
+              dplyr::glimpse()
+
+#--------------------------------------------------------------------
+# fit rasch model
+#--------------------------------------------------------------------
+
+tam_00 <- TAM::tam.mml(resp=data_items, irtmodel = "1PL", pid = data_id, verbose = FALSE)
+
+# Note: the `-1` removes the intercept of the model.
+#       It allows to include all items instead of using an intercept.
+
+# ----------------------------------------------- 
+# display results
+# -----------------------------------------------
+
+tam_00$xsi %>%
+mutate(par = rownames(.)) %>%
+mutate(e_se = xsi/se.xsi) %>%
+dplyr::select(par, xsi, se.xsi, e_se) %>%
+knitr::kable(., digits = 2)
+
+# note: this is a Rasch like model, 
+#       with logit link, with reverse item difficulties.
+
+# ----------------------------------------------- 
+# extract theta
+# -----------------------------------------------
+
+tam_theta <- tibble::as_tibble(TAM::tam.wle(tam_00)) %>%
+             mutate(id_i = pid) %>%
+             dplyr::select(id_i, theta) %>%
+             rename(tam = theta) %>%
+             dplyr::glimpse()
+
+
+```
+
+## `r` IRT with lavaan
+
+```{r, eval = TRUE}
+
+# ----------------------------------------------- 
+# read data
+# -----------------------------------------------
+
+data_resp <- readRDS('taller_4b.rds')
+
+# ----------------------------------------------- 
+# re-structure data
+# -----------------------------------------------
+
+library(dplyr)
+data_items <- data_resp %>%
+              # create a unique case id
+              mutate(id_i = seq(1:nrow(.))) %>%
+              # select items
+              dplyr::select(d01:d16) %>%
+              dplyr::glimpse()
+
+#--------------------------------------------------------------------
+# fit rasch model
+#--------------------------------------------------------------------
+
+rasch_model <- '
+# free lambda
+theta =~ 1*d01
+theta =~ 1*d02
+theta =~ 1*d03
+theta =~ 1*d04
+theta =~ 1*d05
+theta =~ 1*d06
+theta =~ 1*d07
+theta =~ 1*d08
+theta =~ 1*d09
+theta =~ 1*d10
+theta =~ 1*d11
+theta =~ 1*d12
+theta =~ 1*d13
+theta =~ 1*d14
+theta =~ 1*d15
+theta =~ 1*d16
+
+# fixed latent mean
+theta ~ 0*1
+
+# free variance
+theta ~~ theta
+'
+
+# get vector of items
+item_names <- names(data_items)
+
+# fit model
+lav_00 <- lavaan::sem(rasch_model, 
+          data = data_items,
+          ordered= item_names,
+          mimic='mplus',
+          estimator = 'WLSMV')
+
+# ----------------------------------------------- 
+# display results
+# -----------------------------------------------
+
+lavaan::summary(lav_00, fit.measures=TRUE, standardized=TRUE, rsquare=TRUE)
+
+# note: this is a Rasch like model, 
+#       with logit link, with reverse item difficulties.
+
+# ----------------------------------------------- 
+# extract theta
+# -----------------------------------------------
+
+lav_theta <- tibble::tibble(
+             lav = as.numeric(lavaan::lavPredict(lav_00, method = 'EBM', type = 'lv')),
+             id_i = lav_00@Data@case.idx[[1]]) %>%
+             dplyr::select(id_i, lav) %>%
+             dplyr::glimpse()
+
+
+
+```
+
+
+## Item Analysis
+
+```{r, eval = TRUE}
+
+#------------------------------------------------
+# alpha with psych
+#------------------------------------------------
+
+data_items %>%
+psych::alpha()
+
+```
+
+
+## Compare scores
+
+```{r, eval = TRUE}
+
+
+# ----------------------------------------------- 
+# read data
+# -----------------------------------------------
+
+data_resp <- readRDS('taller_4b.rds')
+
+# ----------------------------------------------- 
+# re-structure data
+# -----------------------------------------------
+
+library(dplyr)
+data_scores <- data_resp %>%
+              # create a unique case id
+              mutate(id_i = seq(1:nrow(.))) %>%
+              # select items
+              dplyr::select(d01:d16, id_i) %>%
+              mutate(sum_score = r4sda::sum_score(
+                d01, d02, d03, d04,
+                d05, d06, d07, d08,
+                d09, d10, d11, d12,
+                d13, d14, d15, d16)) %>%
+              mutate(p_score = sum_score/16) %>%
+              mutate(logit_score = log(p_score/(1-p_score))) %>%
+              dplyr::left_join(., glm_theta, by = 'id_i') %>%
+              dplyr::left_join(., tam_theta, by = 'id_i') %>%
+              dplyr::left_join(., lav_theta, by = 'id_i') %>%
+              dplyr::glimpse()
+
+
+# -------------------------------------------------------
+# correlation and scatter panel
+# -------------------------------------------------------
+
+## transparency colour
+add_trans <- function(color,trans)
+{
+  # This function adds transparancy to a color.
+  # Define transparancy with an integer between 0 and 255
+  # 0 being fully transparant and 255 being fully visable
+  # Works with either color and trans a vector of equal length,
+  # or one of the two of length 1.
+
+  if (length(color)!=length(trans)&!any(c(length(color),length(trans))==1)) stop("Vector lengths not correct")
+  if (length(color)==1 & length(trans)>1) color <- rep(color,length(trans))
+  if (length(trans)==1 & length(color)>1) trans <- rep(trans,length(color))
+
+  num2hex <- function(x)
+  {
+    hex <- unlist(strsplit("0123456789ABCDEF",split=""))
+    return(paste(hex[(x-x%%16)/16+1],hex[x%%16+1],sep=""))
+  }
+  rgb <- rbind(col2rgb(color),trans)
+  res <- paste("#",apply(apply(rgb,2,num2hex),2,paste,collapse=""),sep="")
+  return(res)
+}
+
+
+## correlation panel
+panel.cor <- function(x, y){
+    usr <- par("usr"); on.exit(par(usr))
+    par(usr = c(0, 1, 0, 1))
+    r <- round(cor(x, y), digits=2)
+    txt <- paste0("R = ", r)
+    cex.cor <- 0.8/strwidth(txt)
+    text(0.5, 0.5, txt, cex = cex.cor * r)
+}
+
+cols <- sample(c("grey30"),100,TRUE)
+
+
+## customized upper panel
+upper.panel<-function(x, y){
+  points(x,y, pch = 20, cex = .4, col=add_trans(cols,100))
+}
+
+
+# -------------------------------------------------------
+# correlation and scatter panel
+# -------------------------------------------------------
+
+# Create the plots
+dplyr::select(data_scores, sum_score:lav) %>%
+na.omit() %>% 
+pairs(., 
+      lower.panel = panel.cor,
+      upper.panel = upper.panel)
+
+
+# -------------------------------------------------------
+# correlation and scatter panel
+# -------------------------------------------------------
+
+number_ticks <- function(n) {function(limits) pretty(limits, n)}
+
+library(ggplot2)
+ggplot(data_scores, aes(x=sum_score, y=glm)) + 
+geom_point() +
+scale_y_continuous(breaks=number_ticks(5)) +
+coord_cartesian(xlim = c(0, 16)) +
+theme_classic() +
+xlab('sum score') +
+ylab('theta (glm)')
+
+library(ggplot2)
+ggplot(data_scores, aes(x=sum_score, y=tam)) + 
+geom_point() +
+scale_y_continuous(breaks=number_ticks(5)) +
+coord_cartesian(xlim = c(0, 16)) +
+theme_classic() +
+xlab('sum score') +
+ylab('theta (tam)')
+
+library(ggplot2)
+ggplot(data_scores, aes(x=sum_score, y=lav)) + 
+geom_point() +
+scale_y_continuous(breaks=number_ticks(5)) +
+coord_cartesian(xlim = c(0, 16)) +
+theme_classic() +
+xlab('sum score') +
+ylab('theta (lavaan)')
+
+
+
+library(ggplot2)
+ggplot(data_scores, aes(x=p_score, y=glm)) + 
+geom_point() +
+scale_y_continuous(breaks=number_ticks(5)) +
+coord_cartesian(xlim = c(0, 1)) +
+theme_classic() +
+xlab('p score') +
+ylab('theta (glm)')
+
+library(ggplot2)
+ggplot(data_scores, aes(x=p_score, y=tam)) + 
+geom_point() +
+scale_y_continuous(breaks=number_ticks(5)) +
+coord_cartesian(xlim = c(0, 1)) +
+theme_classic() +
+xlab('p score') +
+ylab('theta (tam)')
+
+library(ggplot2)
+ggplot(data_scores, aes(x=p_score, y=lav)) + 
+geom_point() +
+scale_y_continuous(breaks=number_ticks(5)) +
+coord_cartesian(xlim = c(0, 1)) +
+theme_classic() +
+xlab('p score') +
+ylab('theta (lavaan)')
+
+
+#--------------------------------------------------------------------
+# fit rasch model
+#--------------------------------------------------------------------
+
+#------------------------------------------------
+# p_score glm
+#------------------------------------------------
+
+specify_decimal <- function(x, k) format(round(x, k), nsmall=k)
+
+# estimate correlation
+cor <- with(data_scores, cor(glm, p_score, use = 'pairwise.complete.obs')) %>%
+       specify_decimal(., 2) %>%
+       stringr::str_replace_all(., '0.','.')
+
+# define colours
+light_colour <- '#3B6CA6'
+bold_colour  <- '#21376D'
+
+# draw plot
+plot_1 <- ggplot(data_scores, aes(x = glm, y=p_score)) +
+geom_point(alpha = 1/3, colour = light_colour) +
+ylim(c(0,1)) +
+xlim(c(-3,3)) +
+theme(axis.text.y = element_text(size=6, colour = light_colour)) +
+theme(axis.text.x = element_text(size=6, colour = light_colour)) +
+theme(plot.title = element_text(hjust = 0.5)) +
+theme(axis.ticks = element_blank())+
+ylab('p score') +
+xlab(expression('glm ' ~ hat(theta)[p])) +
+theme(
+panel.background = element_rect(fill = "white", colour = light_colour),
+panel.grid.major.y = element_blank(),
+panel.grid.minor.y = element_blank(),
+panel.grid.major.x = element_blank(),
+panel.grid.minor.x = element_blank(),
+axis.title.y = element_text(colour = light_colour),
+axis.title.x = element_text(colour = light_colour)
+) + 
+annotate('text', 
+    x = -2, 
+    y = .75,
+    label = paste0('r = ', cor), 
+    size = 7, 
+    colour = light_colour)
+
+#------------------------------------------------
+# p_score glm
+#------------------------------------------------
+
+specify_decimal <- function(x, k) format(round(x, k), nsmall=k)
+
+# estimate correlation
+cor <- with(data_scores, cor(tam, p_score, use = 'pairwise.complete.obs')) %>%
+       specify_decimal(., 2) %>%
+       stringr::str_replace_all(., '0.','.')
+
+# define colours
+light_colour <- '#3B6CA6'
+bold_colour  <- '#21376D'
+
+# draw plot
+plot_2 <- ggplot(data_scores, aes(x = tam, y=p_score)) +
+geom_point(alpha = 1/3, colour = light_colour) +
+ylim(c(0,1)) +
+xlim(c(-3,3)) +
+theme(axis.text.y = element_text(size=6, colour = light_colour)) +
+theme(axis.text.x = element_text(size=6, colour = light_colour)) +
+theme(plot.title = element_text(hjust = 0.5)) +
+theme(axis.ticks = element_blank())+
+ylab('p score') +
+xlab(expression('tam ' ~ hat(theta)[p])) +
+theme(
+panel.background = element_rect(fill = "white", colour = light_colour),
+panel.grid.major.y = element_blank(),
+panel.grid.minor.y = element_blank(),
+panel.grid.major.x = element_blank(),
+panel.grid.minor.x = element_blank(),
+axis.title.y = element_text(colour = light_colour),
+axis.title.x = element_text(colour = light_colour)
+) + 
+annotate('text', 
+    x = -2, 
+    y = .75,
+    label = paste0('r = ', cor), 
+    size = 7, 
+    colour = light_colour)
+
+
+#------------------------------------------------
+# p_score lav
+#------------------------------------------------
+
+specify_decimal <- function(x, k) format(round(x, k), nsmall=k)
+
+# estimate correlation
+cor <- with(data_scores, cor(lav, p_score, use = 'pairwise.complete.obs')) %>%
+       specify_decimal(., 2)
+
+# define colours
+light_colour <- '#3B6CA6'
+bold_colour  <- '#21376D'
+
+# draw plot
+plot_3 <- ggplot(data_scores, aes(x = lav, y=p_score)) +
+geom_point(alpha = 1/3, colour = light_colour) +
+ylim(c(0,1)) +
+xlim(c(-3,3)) +
+theme(axis.text.y = element_text(size=6, colour = light_colour)) +
+theme(axis.text.x = element_text(size=6, colour = light_colour)) +
+theme(plot.title = element_text(hjust = 0.5)) +
+theme(axis.ticks = element_blank())+
+ylab('p score') +
+xlab(expression('lavaan ' ~ hat(theta)[p])) +
+theme(
+panel.background = element_rect(fill = "white", colour = light_colour),
+panel.grid.major.y = element_blank(),
+panel.grid.minor.y = element_blank(),
+panel.grid.major.x = element_blank(),
+panel.grid.minor.x = element_blank(),
+axis.title.y = element_text(colour = light_colour),
+axis.title.x = element_text(colour = light_colour)
+) + 
+annotate('text', 
+    x = -2, 
+    y = .75,
+    label = paste0('r = ', cor), 
+    size = 7, 
+    colour = light_colour)
+
+
+#------------------------------------------------
+# display plot
+#------------------------------------------------
+
+plot_1 # glm vs sum score
+plot_2 # tam vs sum score
+plot_3 # lav vs sum score
+
+
+library(cowplot)
+plot_grid(
+  plot_1, 
+  plot_2,
+  plot_3,
+  nrow = 1, ncol = 3)
+
+```
+
+
+## Wright Map
+
+```{r, eval = TRUE}
+
+
+#------------------------------------------------------------------------------
+# import mplus estimates
+#------------------------------------------------------------------------------
+
+# ---------------------------------------- 
+# extract delta parameters
+# ---------------------------------------- 
+
+delta_estimates <- tam_00 %>%
+                   purrr::pluck('xsi') %>%
+                   mutate(item = rownames(.)) %>%
+                   rename(delta = xsi) %>%
+                   rename(delta_se = se.xsi) %>%
+                   mutate(e_se = delta/delta_se) %>%
+                   dplyr::select(item, delta, delta_se, e_se)
+                   
+
+
+# ---------------------------------------- 
+# display delta estimates
+# ---------------------------------------- 
+
+delta_estimates %>%
+knitr::kable(., digits = 2)
+
+
+# ----------------------------------------------- 
+# item text
+# ----------------------------------------------- 
+
+item_table <- read.table(
+text="
+item item_text
+d01  '[U] Organized Crime                        '
+d02  '[U] Dealing With Opposition Groups         '
+d03  '[U] Traffic Laws                           '
+d04  '[U] Alcohol And Tobacco Sales To Minors    '
+d05  '[U] Violence In Congress                   '
+d06  '[U] Consequences Of La Dictorships         '
+d07  '[U] Consititution Definition               '
+d08  '[U] Equal Employment Opportunity           '
+d09  '[U] Consequence Of La Voter Apathy         '
+d10  '[U] Characteristic Of La Dictatorships     '
+d11  '[U] Risk Situations For Democracy          '
+d12  '[U] Democratic Leadership                  '
+d13  '[U] Authoritarain Gov Charcteristic        '
+d14  '[U] State Responsibility For Justice System'
+d15  '[U] Indigenous Rights To Preserve Culture  '
+d16  '[U] Voting As Democratic Process           '
+",
+header=TRUE, stringsAsFactors = FALSE)
+
+
+item_table %>%
+knitr::kable(., digits = 2)
+
+
+# ---------------------------------------- 
+# display delta estimates
+# ---------------------------------------- 
+
+item_pos <- delta_estimates %>%
+            arrange(desc(delta)) %>%
+            mutate(x_pos = seq(1:nrow(.))) %>%            
+            dplyr::select(item, x_pos) %>%
+            dplyr::left_join(.,
+            item_table, by = 'item')  %>%
+            print
+
+x_pos <- item_pos %>%
+         dplyr::select(x_pos) %>%
+         unique() %>%
+         .$x_pos
+
+item_text <- item_pos %>%
+             dplyr::select(item_text) %>%
+             .$item_text
+
+
+# ---------------------------------------- 
+# extract theta scores
+# ---------------------------------------- 
+
+theta_p <- tibble::as_tibble(TAM::tam.wle(tam_00)) %>%
+           mutate(id_i = pid) %>%
+           dplyr::select(id_i, theta) %>%
+           dplyr::glimpse()
+
+
+
+# -----------------------------------------------------------------------------
+# make plot by parts
+# -----------------------------------------------------------------------------
+
+
+# ----------------------------------------------- 
+# part 1
+# ----------------------------------------------- 
+
+library('ggpubr')
+p1 <- gghistogram(theta_p, 
+      x = "theta", 
+      fill = "grey90", 
+      ggtheme = theme_bw()) + 
+      xlim(-5, 5) +
+      rremove('x.grid') +
+      xlab('') + ylab(expression(theta[p]))
+
+# ----------------------------------------------- 
+# part 2
+# ----------------------------------------------- 
+
+scale_name <- 'Civic Knowledge (Latino american test, logit scores)'
+
+library('ggpubr')
+p2 <- ggdotchart(delta_estimates, x = "item", y = "delta",
+   color = "black",
+   rotate = TRUE,
+   sorting = 'asc',
+   ggtheme = theme_bw(),
+   y.text.col = FALSE ) + 
+   ylim(-5, 5) + 
+   rremove('x.grid') +
+   rremove('legend') +
+   xlab(bquote(delta['1'] ~ "-" ~ delta['16'])) +
+   ylab(scale_name) +
+   geom_text(
+    aes(
+      label = as.character(item_text), 
+      y = -5, 
+      x = x_pos - .2),
+    colour = "grey50",
+    size = 3,
+    hjust = 0
+  )
+
+# ----------------------------------------------- 
+# plot both parts
+# ----------------------------------------------- 
+
+
+ggarrange(p1, p2, ncol = 1, nrow = 2, align = 'v', heights = c(1,2))
+
+
+# ----------------------------------------------- 
+# save plot
+# ----------------------------------------------- 
+
+ggsave('item_map_1.png',
+     plot   = last_plot(), 
+     width  = 16, 
+     height = 16, 
+     units  = "cm",
+     dpi    = 800,
+     scale  = 1.5)
+
+
+# ----------------------------------------------- 
+# save plot
+# ----------------------------------------------- 
+
+ggsave('item_map_2.png',
+     plot   = last_plot(), 
+     width  = 30, 
+     height = 16, 
+     units  = "cm",
+     dpi    = 800,
+     scale  = 1.5)
+
+
+```
+
+
