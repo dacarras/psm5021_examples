@@ -20,7 +20,7 @@ dacarras
 # load data from url
 #--------------------------------------------------------------------
 
-box_data<-read.csv("https://www.evernote.com/shard/s42/sh/d0f20791-c8e5-4627-972e-5c76625f0ffb/695007b60806fd4ecfa7dbb73c67f8d1/res/4ac06b03-0a8e-4c3d-8d57-29f6e71a6598/box_prob.csv")
+box_data <- read.csv("https://www.evernote.com/shard/s42/sh/d0f20791-c8e5-4627-972e-5c76625f0ffb/695007b60806fd4ecfa7dbb73c67f8d1/res/4ac06b03-0a8e-4c3d-8d57-29f6e71a6598/box_prob.csv")
 
 # ----------------------------------------------- 
 # check data format
@@ -181,7 +181,7 @@ knitr::kable(box_items, digits = 2)
 #--------------------------------------------------------------------
 
 # ----------------------------------------------- 
-# scree test
+# scree test, based PCA
 # -----------------------------------------------
 
 psych::scree(box_items, factors = FALSE, pc = TRUE, hline = 1)
@@ -192,6 +192,20 @@ psych::scree(box_items, factors = FALSE, pc = TRUE, hline = 1)
 ``` r
 # Nota: scree test generado sobre los eigenvalues de un 
 #       análisis de componentes principales.
+
+
+# ----------------------------------------------- 
+# scree test, based EFA
+# -----------------------------------------------
+
+psych::scree(box_items, factors = FALSE, pc = FALSE, hline = 1)
+```
+
+![](box_problem_files/figure-gfm/unnamed-chunk-2-2.png)<!-- -->
+
+``` r
+# Nota: scree test generado sobre los eigenvalues de un 
+#       análisis de "principal axis factoring".
 ```
 
 ## Parallel
@@ -205,12 +219,112 @@ psych::scree(box_items, factors = FALSE, pc = TRUE, hline = 1)
 # parallel
 # -----------------------------------------------
 
-psych::fa.parallel(box_items, fa = "fa", show.legend = FALSE, fm = "ml")
+psych::fa.parallel(box_items, 
+  fa = "fa", 
+  fm = "ml",
+  show.legend = FALSE 
+  )
 ```
 
 ![](box_problem_files/figure-gfm/unnamed-chunk-3-1.png)<!-- -->
 
     ## Parallel analysis suggests that the number of factors =  3  and the number of components =  NA
+
+``` r
+# ----------------------------------------------- 
+# parallel based on minimum rank factor analysis
+# -----------------------------------------------
+
+EFA.MRFA::parallelMRFA(box_items, 
+  Ndatsets = 500, 
+  percent  = 95, 
+  corr     = "Pearson", 
+  display  = TRUE,
+  graph    = TRUE
+  )
+```
+
+    ## Computing PA. Time remaining  23 seconds                                                                  Computing PA. Time remaining  23 seconds                                                                  Computing PA. Time remaining  23 seconds                                                                  Computing PA. Time remaining  22 seconds                                                                  Computing PA. Time remaining  22 seconds                                                                  Computing PA. Time remaining  22 seconds                                                                  Computing PA. Time remaining  22 seconds                                                                  Computing PA. Time remaining  22 seconds                                                                  Computing PA. Time remaining  22 seconds                                                                  Computing PA. Time remaining  22 seconds                                                                  Computing PA. Time remaining  22 seconds                                                                  Computing PA. Time remaining  22 seconds                                                                  Computing PA. Time remaining  22 seconds                                                                  Computing PA. Time remaining  22 seconds                                                                  Computing PA. Time remaining  22 seconds                                                                  Computing PA. Time remaining  22 seconds                                                                  Computing PA. Time remaining  22 seconds                                                                  Computing PA. Time remaining  22 seconds                                                                  Computing PA. Time remaining  22 seconds                                                                  Computing PA. Time remaining  22 seconds                                                                  Computing PA. Time remaining  22 seconds                                                                  Computing PA. Time remaining  22 seconds                                                                  Computing PA. Time remaining  22 seconds                                                                  Computing PA. Time remaining  22 seconds                                                                  Computing PA. Time remaining  22 seconds                                                                  Computing PA. Time remaining  22 seconds                                                                  Computing PA. Time remaining  22 seconds                                                                  Computing PA. Time remaining  22 seconds                                                                  Computing PA. Time remaining  22 seconds                                                                  Computing PA. Time remaining  22 seconds                                                                  Computing PA. Time remaining  22 seconds                                                                  Computing PA. Time remaining  22 seconds                                                                  Computing PA. Time remaining  22 seconds                                                                  Computing PA. Time remaining  22 seconds                                                                  Computing PA. Time remaining  22 seconds                                                                  Computing PA. Time remaining  22 seconds                                                                  Computing PA. Time remaining  22 seconds                                                                  Computing PA. Time remaining  22 seconds                                                                  Computing PA. Time remaining  22 seconds                                                                  Computing PA. Time remaining  22 seconds                                                                  Computing PA. Time remaining  22 seconds                                                                  Computing PA. Time remaining  22 seconds                                                                  Computing PA. Time remaining  22 seconds                                                                  Computing PA. Time remaining  22 seconds                                                                  Computing PA. Time remaining  22 seconds                                                                  Computing PA. Time remaining  22 seconds                                                                  Computing PA. Time remaining  22 seconds                                                                  Computing PA. Time remaining  22 seconds                                                                  Computing PA. Time remaining  22 seconds                                                                  Computing PA. Time remaining  22 seconds                                                                  Computing PA. Time remaining  22 seconds                                                                  Computing PA. Time remaining  21 seconds                                                                  Computing PA. Time remaining  21 seconds                                                                  Computing PA. Time remaining  21 seconds                                                                  Computing PA. Time remaining  21 seconds                                                                  Computing PA. Time remaining  21 seconds                                                                  Computing PA. Time remaining  21 seconds                                                                  Computing PA. Time remaining  21 seconds                                                                  Computing PA. Time remaining  21 seconds                                                                  Computing PA. Time remaining  21 seconds                                                                  Computing PA. Time remaining  21 seconds                                                                  Computing PA. Time remaining  21 seconds                                                                  Computing PA. Time remaining  21 seconds                                                                  Computing PA. Time remaining  21 seconds                                                                  Computing PA. Time remaining  21 seconds                                                                  Computing PA. Time remaining  21 seconds                                                                  Computing PA. Time remaining  21 seconds                                                                  Computing PA. Time remaining  21 seconds                                                                  Computing PA. Time remaining  21 seconds                                                                  Computing PA. Time remaining  21 seconds                                                                  Computing PA. Time remaining  21 seconds                                                                  Computing PA. Time remaining  21 seconds                                                                  Computing PA. Time remaining  20 seconds                                                                  Computing PA. Time remaining  20 seconds                                                                  Computing PA. Time remaining  20 seconds                                                                  Computing PA. Time remaining  20 seconds                                                                  Computing PA. Time remaining  20 seconds                                                                  Computing PA. Time remaining  20 seconds                                                                  Computing PA. Time remaining  20 seconds                                                                  Computing PA. Time remaining  20 seconds                                                                  Computing PA. Time remaining  20 seconds                                                                  Computing PA. Time remaining  20 seconds                                                                  Computing PA. Time remaining  20 seconds                                                                  Computing PA. Time remaining  20 seconds                                                                  Computing PA. Time remaining  20 seconds                                                                  Computing PA. Time remaining  20 seconds                                                                  Computing PA. Time remaining  20 seconds                                                                  Computing PA. Time remaining  20 seconds                                                                  Computing PA. Time remaining  20 seconds                                                                  Computing PA. Time remaining  20 seconds                                                                  Computing PA. Time remaining  20 seconds                                                                  Computing PA. Time remaining  20 seconds                                                                  Computing PA. Time remaining  20 seconds                                                                  Computing PA. Time remaining  20 seconds                                                                  Computing PA. Time remaining  20 seconds                                                                  Computing PA. Time remaining  20 seconds                                                                  Computing PA. Time remaining  19 seconds                                                                  Computing PA. Time remaining  20 seconds                                                                  Computing PA. Time remaining  20 seconds                                                                  Computing PA. Time remaining  20 seconds                                                                  Computing PA. Time remaining  20 seconds                                                                  Computing PA. Time remaining  20 seconds                                                                  Computing PA. Time remaining  19 seconds                                                                  Computing PA. Time remaining  19 seconds                                                                  Computing PA. Time remaining  19 seconds                                                                  Computing PA. Time remaining  20 seconds                                                                  Computing PA. Time remaining  19 seconds                                                                  Computing PA. Time remaining  20 seconds                                                                  Computing PA. Time remaining  19 seconds                                                                  Computing PA. Time remaining  19 seconds                                                                  Computing PA. Time remaining  19 seconds                                                                  Computing PA. Time remaining  19 seconds                                                                  Computing PA. Time remaining  19 seconds                                                                  Computing PA. Time remaining  19 seconds                                                                  Computing PA. Time remaining  19 seconds                                                                  Computing PA. Time remaining  19 seconds                                                                  Computing PA. Time remaining  19 seconds                                                                  Computing PA. Time remaining  19 seconds                                                                  Computing PA. Time remaining  19 seconds                                                                  Computing PA. Time remaining  19 seconds                                                                  Computing PA. Time remaining  19 seconds                                                                  Computing PA. Time remaining  19 seconds                                                                  Computing PA. Time remaining  19 seconds                                                                  Computing PA. Time remaining  19 seconds                                                                  Computing PA. Time remaining  19 seconds                                                                  Computing PA. Time remaining  19 seconds                                                                  Computing PA. Time remaining  19 seconds                                                                  Computing PA. Time remaining  18 seconds                                                                  Computing PA. Time remaining  18 seconds                                                                  Computing PA. Time remaining  18 seconds                                                                  Computing PA. Time remaining  18 seconds                                                                  Computing PA. Time remaining  18 seconds                                                                  Computing PA. Time remaining  18 seconds                                                                  Computing PA. Time remaining  18 seconds                                                                  Computing PA. Time remaining  18 seconds                                                                  Computing PA. Time remaining  18 seconds                                                                  Computing PA. Time remaining  18 seconds                                                                  Computing PA. Time remaining  18 seconds                                                                  Computing PA. Time remaining  18 seconds                                                                  Computing PA. Time remaining  18 seconds                                                                  Computing PA. Time remaining  18 seconds                                                                  Computing PA. Time remaining  18 seconds                                                                  Computing PA. Time remaining  17 seconds                                                                  Computing PA. Time remaining  17 seconds                                                                  Computing PA. Time remaining  17 seconds                                                                  Computing PA. Time remaining  17 seconds                                                                  Computing PA. Time remaining  17 seconds                                                                  Computing PA. Time remaining  17 seconds                                                                  Computing PA. Time remaining  17 seconds                                                                  Computing PA. Time remaining  17 seconds                                                                  Computing PA. Time remaining  17 seconds                                                                  Computing PA. Time remaining  17 seconds                                                                  Computing PA. Time remaining  17 seconds                                                                  Computing PA. Time remaining  17 seconds                                                                  Computing PA. Time remaining  17 seconds                                                                  Computing PA. Time remaining  17 seconds                                                                  Computing PA. Time remaining  17 seconds                                                                  Computing PA. Time remaining  17 seconds                                                                  Computing PA. Time remaining  17 seconds                                                                  Computing PA. Time remaining  16 seconds                                                                  Computing PA. Time remaining  16 seconds                                                                  Computing PA. Time remaining  16 seconds                                                                  Computing PA. Time remaining  16 seconds                                                                  Computing PA. Time remaining  16 seconds                                                                  Computing PA. Time remaining  16 seconds                                                                  Computing PA. Time remaining  16 seconds                                                                  Computing PA. Time remaining  16 seconds                                                                  Computing PA. Time remaining  16 seconds                                                                  Computing PA. Time remaining  16 seconds                                                                  Computing PA. Time remaining  16 seconds                                                                  Computing PA. Time remaining  16 seconds                                                                  Computing PA. Time remaining  16 seconds                                                                  Computing PA. Time remaining  16 seconds                                                                  Computing PA. Time remaining  16 seconds                                                                  Computing PA. Time remaining  16 seconds                                                                  Computing PA. Time remaining  15 seconds                                                                  Computing PA. Time remaining  15 seconds                                                                  Computing PA. Time remaining  15 seconds                                                                  Computing PA. Time remaining  15 seconds                                                                  Computing PA. Time remaining  15 seconds                                                                  Computing PA. Time remaining  15 seconds                                                                  Computing PA. Time remaining  15 seconds                                                                  Computing PA. Time remaining  15 seconds                                                                  Computing PA. Time remaining  15 seconds                                                                  Computing PA. Time remaining  15 seconds                                                                  Computing PA. Time remaining  15 seconds                                                                  Computing PA. Time remaining  15 seconds                                                                  Computing PA. Time remaining  15 seconds                                                                  Computing PA. Time remaining  15 seconds                                                                  Computing PA. Time remaining  15 seconds                                                                  Computing PA. Time remaining  15 seconds                                                                  Computing PA. Time remaining  15 seconds                                                                  Computing PA. Time remaining  15 seconds                                                                  Computing PA. Time remaining  15 seconds                                                                  Computing PA. Time remaining  15 seconds                                                                  Computing PA. Time remaining  15 seconds                                                                  Computing PA. Time remaining  14 seconds                                                                  Computing PA. Time remaining  14 seconds                                                                  Computing PA. Time remaining  14 seconds                                                                  Computing PA. Time remaining  14 seconds                                                                  Computing PA. Time remaining  14 seconds                                                                  Computing PA. Time remaining  14 seconds                                                                  Computing PA. Time remaining  14 seconds                                                                  Computing PA. Time remaining  14 seconds                                                                  Computing PA. Time remaining  14 seconds                                                                  Computing PA. Time remaining  14 seconds                                                                  Computing PA. Time remaining  14 seconds                                                                  Computing PA. Time remaining  14 seconds                                                                  Computing PA. Time remaining  14 seconds                                                                  Computing PA. Time remaining  14 seconds                                                                  Computing PA. Time remaining  14 seconds                                                                  Computing PA. Time remaining  14 seconds                                                                  Computing PA. Time remaining  14 seconds                                                                  Computing PA. Time remaining  14 seconds                                                                  Computing PA. Time remaining  14 seconds                                                                  Computing PA. Time remaining  13 seconds                                                                  Computing PA. Time remaining  13 seconds                                                                  Computing PA. Time remaining  13 seconds                                                                  Computing PA. Time remaining  13 seconds                                                                  Computing PA. Time remaining  13 seconds                                                                  Computing PA. Time remaining  13 seconds                                                                  Computing PA. Time remaining  13 seconds                                                                  Computing PA. Time remaining  13 seconds                                                                  Computing PA. Time remaining  13 seconds                                                                  Computing PA. Time remaining  13 seconds                                                                  Computing PA. Time remaining  13 seconds                                                                  Computing PA. Time remaining  13 seconds                                                                  Computing PA. Time remaining  13 seconds                                                                  Computing PA. Time remaining  13 seconds                                                                  Computing PA. Time remaining  13 seconds                                                                  Computing PA. Time remaining  13 seconds                                                                  Computing PA. Time remaining  13 seconds                                                                  Computing PA. Time remaining  13 seconds                                                                  Computing PA. Time remaining  13 seconds                                                                  Computing PA. Time remaining  13 seconds                                                                  Computing PA. Time remaining  13 seconds                                                                  Computing PA. Time remaining  13 seconds                                                                  Computing PA. Time remaining  12 seconds                                                                  Computing PA. Time remaining  12 seconds                                                                  Computing PA. Time remaining  12 seconds                                                                  Computing PA. Time remaining  12 seconds                                                                  Computing PA. Time remaining  12 seconds                                                                  Computing PA. Time remaining  12 seconds                                                                  Computing PA. Time remaining  12 seconds                                                                  Computing PA. Time remaining  12 seconds                                                                  Computing PA. Time remaining  12 seconds                                                                  Computing PA. Time remaining  12 seconds                                                                  Computing PA. Time remaining  12 seconds                                                                  Computing PA. Time remaining  12 seconds                                                                  Computing PA. Time remaining  12 seconds                                                                  Computing PA. Time remaining  12 seconds                                                                  Computing PA. Time remaining  12 seconds                                                                  Computing PA. Time remaining  12 seconds                                                                  Computing PA. Time remaining  12 seconds                                                                  Computing PA. Time remaining  12 seconds                                                                  Computing PA. Time remaining  12 seconds                                                                  Computing PA. Time remaining  12 seconds                                                                  Computing PA. Time remaining  12 seconds                                                                  Computing PA. Time remaining  12 seconds                                                                  Computing PA. Time remaining  12 seconds                                                                  Computing PA. Time remaining  11 seconds                                                                  Computing PA. Time remaining  11 seconds                                                                  Computing PA. Time remaining  11 seconds                                                                  Computing PA. Time remaining  11 seconds                                                                  Computing PA. Time remaining  11 seconds                                                                  Computing PA. Time remaining  11 seconds                                                                  Computing PA. Time remaining  11 seconds                                                                  Computing PA. Time remaining  11 seconds                                                                  Computing PA. Time remaining  11 seconds                                                                  Computing PA. Time remaining  11 seconds                                                                  Computing PA. Time remaining  11 seconds                                                                  Computing PA. Time remaining  11 seconds                                                                  Computing PA. Time remaining  11 seconds                                                                  Computing PA. Time remaining  11 seconds                                                                  Computing PA. Time remaining  11 seconds                                                                  Computing PA. Time remaining  11 seconds                                                                  Computing PA. Time remaining  11 seconds                                                                  Computing PA. Time remaining  11 seconds                                                                  Computing PA. Time remaining  11 seconds                                                                  Computing PA. Time remaining  11 seconds                                                                  Computing PA. Time remaining  11 seconds                                                                  Computing PA. Time remaining  11 seconds                                                                  Computing PA. Time remaining  11 seconds                                                                  Computing PA. Time remaining  11 seconds                                                                  Computing PA. Time remaining  11 seconds                                                                  Computing PA. Time remaining  11 seconds                                                                  Computing PA. Time remaining  11 seconds                                                                  Computing PA. Time remaining  10 seconds                                                                  Computing PA. Time remaining  10 seconds                                                                  Computing PA. Time remaining  10 seconds                                                                  Computing PA. Time remaining  10 seconds                                                                  Computing PA. Time remaining  10 seconds                                                                  Computing PA. Time remaining  10 seconds                                                                  Computing PA. Time remaining  10 seconds                                                                  Computing PA. Time remaining  10 seconds                                                                  Computing PA. Time remaining  10 seconds                                                                  Computing PA. Time remaining  10 seconds                                                                  Computing PA. Time remaining  10 seconds                                                                  Computing PA. Time remaining  10 seconds                                                                  Computing PA. Time remaining  10 seconds                                                                  Computing PA. Time remaining  10 seconds                                                                  Computing PA. Time remaining  10 seconds                                                                  Computing PA. Time remaining  10 seconds                                                                  Computing PA. Time remaining  10 seconds                                                                  Computing PA. Time remaining  10 seconds                                                                  Computing PA. Time remaining  10 seconds                                                                  Computing PA. Time remaining  10 seconds                                                                  Computing PA. Time remaining  10 seconds                                                                  Computing PA. Time remaining  9 seconds                                                                  Computing PA. Time remaining  9 seconds                                                                  Computing PA. Time remaining  9 seconds                                                                  Computing PA. Time remaining  9 seconds                                                                  Computing PA. Time remaining  9 seconds                                                                  Computing PA. Time remaining  9 seconds                                                                  Computing PA. Time remaining  9 seconds                                                                  Computing PA. Time remaining  9 seconds                                                                  Computing PA. Time remaining  9 seconds                                                                  Computing PA. Time remaining  9 seconds                                                                  Computing PA. Time remaining  9 seconds                                                                  Computing PA. Time remaining  9 seconds                                                                  Computing PA. Time remaining  9 seconds                                                                  Computing PA. Time remaining  9 seconds                                                                  Computing PA. Time remaining  9 seconds                                                                  Computing PA. Time remaining  9 seconds                                                                  Computing PA. Time remaining  9 seconds                                                                  Computing PA. Time remaining  9 seconds                                                                  Computing PA. Time remaining  9 seconds                                                                  Computing PA. Time remaining  9 seconds                                                                  Computing PA. Time remaining  9 seconds                                                                  Computing PA. Time remaining  9 seconds                                                                  Computing PA. Time remaining  8 seconds                                                                  Computing PA. Time remaining  8 seconds                                                                  Computing PA. Time remaining  8 seconds                                                                  Computing PA. Time remaining  8 seconds                                                                  Computing PA. Time remaining  8 seconds                                                                  Computing PA. Time remaining  8 seconds                                                                  Computing PA. Time remaining  8 seconds                                                                  Computing PA. Time remaining  8 seconds                                                                  Computing PA. Time remaining  8 seconds                                                                  Computing PA. Time remaining  8 seconds                                                                  Computing PA. Time remaining  8 seconds                                                                  Computing PA. Time remaining  8 seconds                                                                  Computing PA. Time remaining  8 seconds                                                                  Computing PA. Time remaining  8 seconds                                                                  Computing PA. Time remaining  8 seconds                                                                  Computing PA. Time remaining  8 seconds                                                                  Computing PA. Time remaining  8 seconds                                                                  Computing PA. Time remaining  8 seconds                                                                  Computing PA. Time remaining  8 seconds                                                                  Computing PA. Time remaining  8 seconds                                                                  Computing PA. Time remaining  8 seconds                                                                  Computing PA. Time remaining  7 seconds                                                                  Computing PA. Time remaining  7 seconds                                                                  Computing PA. Time remaining  7 seconds                                                                  Computing PA. Time remaining  7 seconds                                                                  Computing PA. Time remaining  7 seconds                                                                  Computing PA. Time remaining  7 seconds                                                                  Computing PA. Time remaining  7 seconds                                                                  Computing PA. Time remaining  7 seconds                                                                  Computing PA. Time remaining  7 seconds                                                                  Computing PA. Time remaining  7 seconds                                                                  Computing PA. Time remaining  7 seconds                                                                  Computing PA. Time remaining  7 seconds                                                                  Computing PA. Time remaining  7 seconds                                                                  Computing PA. Time remaining  7 seconds                                                                  Computing PA. Time remaining  7 seconds                                                                  Computing PA. Time remaining  7 seconds                                                                  Computing PA. Time remaining  7 seconds                                                                  Computing PA. Time remaining  7 seconds                                                                  Computing PA. Time remaining  7 seconds                                                                  Computing PA. Time remaining  7 seconds                                                                  Computing PA. Time remaining  7 seconds                                                                  Computing PA. Time remaining  7 seconds                                                                  Computing PA. Time remaining  7 seconds                                                                  Computing PA. Time remaining  7 seconds                                                                  Computing PA. Time remaining  6 seconds                                                                  Computing PA. Time remaining  6 seconds                                                                  Computing PA. Time remaining  6 seconds                                                                  Computing PA. Time remaining  6 seconds                                                                  Computing PA. Time remaining  6 seconds                                                                  Computing PA. Time remaining  6 seconds                                                                  Computing PA. Time remaining  6 seconds                                                                  Computing PA. Time remaining  6 seconds                                                                  Computing PA. Time remaining  6 seconds                                                                  Computing PA. Time remaining  6 seconds                                                                  Computing PA. Time remaining  6 seconds                                                                  Computing PA. Time remaining  6 seconds                                                                  Computing PA. Time remaining  6 seconds                                                                  Computing PA. Time remaining  6 seconds                                                                  Computing PA. Time remaining  6 seconds                                                                  Computing PA. Time remaining  6 seconds                                                                  Computing PA. Time remaining  6 seconds                                                                  Computing PA. Time remaining  6 seconds                                                                  Computing PA. Time remaining  6 seconds                                                                  Computing PA. Time remaining  6 seconds                                                                  Computing PA. Time remaining  6 seconds                                                                  Computing PA. Time remaining  6 seconds                                                                  Computing PA. Time remaining  6 seconds                                                                  Computing PA. Time remaining  5 seconds                                                                  Computing PA. Time remaining  5 seconds                                                                  Computing PA. Time remaining  5 seconds                                                                  Computing PA. Time remaining  5 seconds                                                                  Computing PA. Time remaining  5 seconds                                                                  Computing PA. Time remaining  5 seconds                                                                  Computing PA. Time remaining  5 seconds                                                                  Computing PA. Time remaining  5 seconds                                                                  Computing PA. Time remaining  5 seconds                                                                  Computing PA. Time remaining  5 seconds                                                                  Computing PA. Time remaining  5 seconds                                                                  Computing PA. Time remaining  5 seconds                                                                  Computing PA. Time remaining  5 seconds                                                                  Computing PA. Time remaining  5 seconds                                                                  Computing PA. Time remaining  5 seconds                                                                  Computing PA. Time remaining  5 seconds                                                                  Computing PA. Time remaining  5 seconds                                                                  Computing PA. Time remaining  5 seconds                                                                  Computing PA. Time remaining  5 seconds                                                                  Computing PA. Time remaining  5 seconds                                                                  Computing PA. Time remaining  5 seconds                                                                  Computing PA. Time remaining  5 seconds                                                                  Computing PA. Time remaining  4 seconds                                                                  Computing PA. Time remaining  4 seconds                                                                  Computing PA. Time remaining  4 seconds                                                                  Computing PA. Time remaining  4 seconds                                                                  Computing PA. Time remaining  4 seconds                                                                  Computing PA. Time remaining  4 seconds                                                                  Computing PA. Time remaining  4 seconds                                                                  Computing PA. Time remaining  4 seconds                                                                  Computing PA. Time remaining  4 seconds                                                                  Computing PA. Time remaining  4 seconds                                                                  Computing PA. Time remaining  4 seconds                                                                  Computing PA. Time remaining  4 seconds                                                                  Computing PA. Time remaining  4 seconds                                                                  Computing PA. Time remaining  4 seconds                                                                  Computing PA. Time remaining  4 seconds                                                                  Computing PA. Time remaining  4 seconds                                                                  Computing PA. Time remaining  4 seconds                                                                  Computing PA. Time remaining  4 seconds                                                                  Computing PA. Time remaining  4 seconds                                                                  Computing PA. Time remaining  4 seconds                                                                  Computing PA. Time remaining  3 seconds                                                                  Computing PA. Time remaining  3 seconds                                                                  Computing PA. Time remaining  3 seconds                                                                  Computing PA. Time remaining  3 seconds                                                                  Computing PA. Time remaining  3 seconds                                                                  Computing PA. Time remaining  3 seconds                                                                  Computing PA. Time remaining  3 seconds                                                                  Computing PA. Time remaining  3 seconds                                                                  Computing PA. Time remaining  3 seconds                                                                  Computing PA. Time remaining  3 seconds                                                                  Computing PA. Time remaining  3 seconds                                                                  Computing PA. Time remaining  3 seconds                                                                  Computing PA. Time remaining  3 seconds                                                                  Computing PA. Time remaining  3 seconds                                                                  Computing PA. Time remaining  3 seconds                                                                  Computing PA. Time remaining  3 seconds                                                                  Computing PA. Time remaining  3 seconds                                                                  Computing PA. Time remaining  3 seconds                                                                  Computing PA. Time remaining  3 seconds                                                                  Computing PA. Time remaining  3 seconds                                                                  Computing PA. Time remaining  2 seconds                                                                  Computing PA. Time remaining  2 seconds                                                                  Computing PA. Time remaining  2 seconds                                                                  Computing PA. Time remaining  2 seconds                                                                  Computing PA. Time remaining  2 seconds                                                                  Computing PA. Time remaining  2 seconds                                                                  Computing PA. Time remaining  2 seconds                                                                  Computing PA. Time remaining  2 seconds                                                                  Computing PA. Time remaining  2 seconds                                                                  Computing PA. Time remaining  2 seconds                                                                  Computing PA. Time remaining  2 seconds                                                                  Computing PA. Time remaining  2 seconds                                                                  Computing PA. Time remaining  2 seconds                                                                  Computing PA. Time remaining  2 seconds                                                                  Computing PA. Time remaining  2 seconds                                                                  Computing PA. Time remaining  2 seconds                                                                  Computing PA. Time remaining  2 seconds                                                                  Computing PA. Time remaining  2 seconds                                                                  Computing PA. Time remaining  2 seconds                                                                  Computing PA. Time remaining  2 seconds                                                                  Computing PA. Time remaining  1 seconds                                                                  Computing PA. Time remaining  1 seconds                                                                  Computing PA. Time remaining  1 seconds                                                                  Computing PA. Time remaining  1 seconds                                                                  Computing PA. Time remaining  1 seconds                                                                  Computing PA. Time remaining  1 seconds                                                                  Computing PA. Time remaining  1 seconds                                                                  Computing PA. Time remaining  1 seconds                                                                  Computing PA. Time remaining  1 seconds                                                                  Computing PA. Time remaining  1 seconds                                                                  Computing PA. Time remaining  1 seconds                                                                  Computing PA. Time remaining  1 seconds                                                                  Computing PA. Time remaining  1 seconds                                                                  Computing PA. Time remaining  1 seconds                                                                  Computing PA. Time remaining  1 seconds                                                                  Computing PA. Time remaining  1 seconds                                                                  Computing PA. Time remaining  1 seconds                                                                  Computing PA. Time remaining  1 seconds                                                                  Computing PA. Time remaining  1 seconds                                                                  Computing PA. Time remaining  0 seconds                                                                                                                                                                      
+
+![](box_problem_files/figure-gfm/unnamed-chunk-3-2.png)<!-- -->
+
+    ## 
+    ## Parallel Analysis (PA) based on Minimum Rank Factor Analysis
+    ## 
+    ## Adequacy of the Dispersion Matrix:
+    ## 
+    ## Determinant of the matrix     = 0.000000843087289
+    ## Bartlett's statistic          =   487.2 (df =    45; P = 0.000000)
+    ## Kaiser-Meyer-Olkin (KMO) test = 0.80370 (good)
+    ## 
+    ## Implementation details:
+    ## 
+    ##   Correlation matrices analized:                Pearson correlation matrices
+    ##   Number of random correlation matrices:        500
+    ##   Method to obtain random correlation matrices: Permutation of the raw data
+    ## 
+    ## Item      Real-data        Mean of random   95 percentile of random
+    ##           % of variance    % of variance    % of variance
+    ## 
+    ##    1       59.10**          23.28            27.89
+    ##    2       20.66*           19.79            22.69
+    ##    3       13.47            16.66            19.00
+    ##    4        4.98            13.71            15.76
+    ##    5        0.94            10.72            12.80
+    ##    6        0.40             7.91            10.09
+    ##    7        0.31             5.06             7.36
+    ##    8        0.09             2.10             4.66
+    ##    9        0.04             0.76             1.29
+    ##   10        0.00             0.00             0.00
+    ## 
+    ## **  Advised number of factors:   1
+    ## *   Advised number of factors:   2
+
+## Hull Method
+
+``` r
+#--------------------------------------------------------------------
+# dimensionality
+#--------------------------------------------------------------------
+
+# ----------------------------------------------- 
+# Hull Method
+# -----------------------------------------------
+
+EFA.MRFA::hullEFA(box_items, extr = 'ULS', index_hull = 'CAF')
+```
+
+    ## Warning in fa.stats(r = r, f = f, phi = phi, n.obs = n.obs, np.obs = np.obs, :
+    ## The estimated weights for the factor scores are probably incorrect. Try a
+    ## different factor score estimation method.
+
+    ## Warning in fac(r = r, nfactors = nfactors, n.obs = n.obs, rotate = rotate, : An
+    ## ultra-Heywood case was detected. Examine the results carefully
+
+    ## HULL METHOD - CAF INDEX
+    ## 
+    ##         q      f          g       st
+    ##         0      0.1963    45       0.0000 
+    ##         1*     0.2637    35       
+    ##         2*     0.3083    26       
+    ##         3      0.4928    18       26.6300 
+    ##         4      0.4956    11       0.0000 
+    ## 
+    ## Number of advised dimensions: 3 
+    ## * Value outside the convex Hull 
+    ## 
+    ## -----------------------------------------------
+
+![](box_problem_files/figure-gfm/unnamed-chunk-4-1.png)<!-- -->
+
+``` r
+# Note: CAF stands for "common part accounted for".
+#       CAF is an index that expresses the extent to which 
+#       common variance in the observed data is captured by 
+#       the common factor model. Simulation studies argue it
+#       outperforms other methods (e.g., paralell, MAP)
+#       (see Lorenzo-Seva, et al., 2011)
+```
 
 ## MAP
 
@@ -303,7 +417,7 @@ abline(
   lwd=1)
 ```
 
-![](box_problem_files/figure-gfm/unnamed-chunk-4-1.png)<!-- -->
+![](box_problem_files/figure-gfm/unnamed-chunk-5-1.png)<!-- -->
 
 ## EFA
 
@@ -318,7 +432,10 @@ abline(
 
 library(psych)
 library(GPArotation)
-efa_fit <- fa(box_items, fm="mle", nfactors=3, rotate="varimax")
+efa_fit <- fa(box_items, 
+           fm = "mle", 
+           nfactors = 3, 
+           rotate = "varimax")
 
 # ----------------------------------------------- 
 # exploratory factor analysis
@@ -371,8 +488,325 @@ efa_fit
     ## Multiple R square of scores with factors          0.98 0.98 0.96
     ## Minimum correlation of possible factor scores     0.96 0.95 0.92
 
-## References
+``` r
+# ----------------------------------------------- 
+# exploratory factor analysis
+# -----------------------------------------------
+
+library(psych)
+library(GPArotation)
+efa_fit <- fa(box_items, 
+           fm = "mle", 
+           nfactors = 2, 
+           rotate = "varimax")
+
+# ----------------------------------------------- 
+# exploratory factor analysis
+# -----------------------------------------------
+
+efa_fit
+```
+
+    ## Factor Analysis using method =  ml
+    ## Call: fa(r = box_items, nfactors = 2, rotate = "varimax", fm = "mle")
+    ## Standardized loadings (pattern matrix) based upon correlation matrix
+    ##       ML2  ML1    h2    u2 com
+    ## i1   0.11 0.03 0.013 0.987 1.1
+    ## i2   0.84 0.20 0.751 0.249 1.1
+    ## i3  -0.03 1.00 0.995 0.005 1.0
+    ## i4   0.92 0.22 0.898 0.102 1.1
+    ## i5   0.19 0.86 0.777 0.223 1.1
+    ## i6   0.36 0.86 0.866 0.134 1.3
+    ## i7   0.89 0.13 0.816 0.184 1.0
+    ## i8   0.55 0.49 0.552 0.448 2.0
+    ## i9   0.59 0.63 0.750 0.250 2.0
+    ## i10  0.87 0.14 0.781 0.219 1.0
+    ## 
+    ##                        ML2  ML1
+    ## SS loadings           3.96 3.24
+    ## Proportion Var        0.40 0.32
+    ## Cumulative Var        0.40 0.72
+    ## Proportion Explained  0.55 0.45
+    ## Cumulative Proportion 0.55 1.00
+    ## 
+    ## Mean item complexity =  1.3
+    ## Test of the hypothesis that 2 factors are sufficient.
+    ## 
+    ## The degrees of freedom for the null model are  45  and the objective function was  13.99 with Chi Square of  487.19
+    ## The degrees of freedom for the model are 26  and the objective function was  4.59 
+    ## 
+    ## The root mean square of the residuals (RMSR) is  0.1 
+    ## The df corrected root mean square of the residuals is  0.14 
+    ## 
+    ## The harmonic number of observations is  40 with the empirical chi square  39.33  with prob <  0.045 
+    ## The total number of observations was  40  with Likelihood Chi Square =  153.8  with prob <  4.2e-20 
+    ## 
+    ## Tucker Lewis Index of factoring reliability =  0.478
+    ## RMSEA index =  0.35  and the 90 % confidence intervals are  0.302 0.41
+    ## BIC =  57.89
+    ## Fit based upon off diagonal values = 0.96
+    ## Measures of factor score adequacy             
+    ##                                                    ML2  ML1
+    ## Correlation of (regression) scores with factors   0.98 1.00
+    ## Multiple R square of scores with factors          0.96 1.00
+    ## Minimum correlation of possible factor scores     0.92 0.99
+
+## CFA
+
+``` r
+#--------------------------------------------------------------------
+# dimensionality
+#--------------------------------------------------------------------
+
+# ----------------------------------------------- 
+# confirmatory factor analysis
+# -----------------------------------------------
+
+lavaan_model <- '
+
+axis_x =~ start( 0.01)*i1 
+axis_x =~ start( 0.94)*i2 
+axis_x =~ start(-0.01)*i3 
+axis_x =~ start( 0.90)*i4 
+axis_x =~ start( 0.12)*i5 
+axis_x =~ start( 0.41)*i6 
+axis_x =~ start( 0.82)*i7 
+axis_x =~ start( 0.42)*i8 
+axis_x =~ start( 0.70)*i9 
+axis_x =~ start( 0.83)*i10
+
+axis_y =~ start(0.00)*i1 
+axis_y =~ start(0.21)*i2 
+axis_y =~ start(0.97)*i3 
+axis_y =~ start(0.18)*i4 
+axis_y =~ start(0.85)*i5 
+axis_y =~ start(0.88)*i6 
+axis_y =~ start(0.07)*i7 
+axis_y =~ start(0.42)*i8 
+axis_y =~ start(0.65)*i9 
+axis_y =~ start(0.09)*i10
+
+
+axis_z =~ start( 0.38)*i1 
+axis_z =~ start(-0.18)*i2 
+axis_z =~ start( 0.09)*i3 
+axis_z =~ start( 0.23)*i4 
+axis_z =~ start( 0.42)*i5 
+axis_z =~ start(-0.04)*i6 
+axis_z =~ start( 0.51)*i7 
+axis_z =~ start( 0.78)*i8 
+axis_z =~ start(-0.21)*i9 
+axis_z =~ start( 0.34)*i10
+
+
+axis_x ~~ 0*axis_y
+axis_x ~~ 0*axis_z
+axis_y ~~ 0*axis_z
+
+'
+# ----------------------------------------------- 
+# fit lavaan model
+# -----------------------------------------------
+
+cfa_fit <- lavaan::sem(lavaan_model, 
+            data = box_items,
+            mimic='mplus',
+            estimator = 'MLR')
+```
+
+    ## Warning in lav_model_vcov(lavmodel = lavmodel, lavsamplestats = lavsamplestats, : lavaan WARNING:
+    ##     The variance-covariance matrix of the estimated parameters (vcov)
+    ##     does not appear to be positive definite! The smallest eigenvalue
+    ##     (= -1.595469e-02) is smaller than zero. This may be a symptom that
+    ##     the model is not identified.
+
+``` r
+# ----------------------------------------------- 
+# display results
+# -----------------------------------------------
+
+lavaan::summary(cfa_fit, fit.measures=TRUE, standardized=TRUE, rsquare=TRUE)
+```
+
+    ## lavaan 0.6-12 ended normally after 320 iterations
+    ## 
+    ##   Estimator                                         ML
+    ##   Optimization method                           NLMINB
+    ##   Number of model parameters                        50
+    ## 
+    ##   Number of observations                            40
+    ##   Number of missing patterns                         1
+    ## 
+    ## Model Test User Model:
+    ##                                               Standard      Robust
+    ##   Test Statistic                                18.849      24.878
+    ##   Degrees of freedom                                15          15
+    ##   P-value (Chi-square)                           0.221       0.052
+    ##   Scaling correction factor                                  0.758
+    ##     Yuan-Bentler correction (Mplus variant)                       
+    ## 
+    ## Model Test Baseline Model:
+    ## 
+    ##   Test statistic                               559.448     516.656
+    ##   Degrees of freedom                                45          45
+    ##   P-value                                        0.000       0.000
+    ##   Scaling correction factor                                  1.083
+    ## 
+    ## User Model versus Baseline Model:
+    ## 
+    ##   Comparative Fit Index (CFI)                    0.993       0.979
+    ##   Tucker-Lewis Index (TLI)                       0.978       0.937
+    ##                                                                   
+    ##   Robust Comparative Fit Index (CFI)                         0.985
+    ##   Robust Tucker-Lewis Index (TLI)                            0.956
+    ## 
+    ## Loglikelihood and Information Criteria:
+    ## 
+    ##   Loglikelihood user model (H0)               -697.299    -697.299
+    ##   Scaling correction factor                                  1.323
+    ##       for the MLR correction                                      
+    ##   Loglikelihood unrestricted model (H1)       -687.875    -687.875
+    ##   Scaling correction factor                                  1.193
+    ##       for the MLR correction                                      
+    ##                                                                   
+    ##   Akaike (AIC)                                1494.599    1494.599
+    ##   Bayesian (BIC)                              1579.043    1579.043
+    ##   Sample-size adjusted Bayesian (BIC)         1422.580    1422.580
+    ## 
+    ## Root Mean Square Error of Approximation:
+    ## 
+    ##   RMSEA                                          0.080       0.128
+    ##   90 Percent confidence interval - lower         0.000       0.000
+    ##   90 Percent confidence interval - upper         0.179       0.227
+    ##   P-value RMSEA <= 0.05                          0.311       0.117
+    ##                                                                   
+    ##   Robust RMSEA                                               0.112
+    ##   90 Percent confidence interval - lower                     0.000
+    ##   90 Percent confidence interval - upper                     0.187
+    ## 
+    ## Standardized Root Mean Square Residual:
+    ## 
+    ##   SRMR                                           0.011       0.011
+    ## 
+    ## Parameter Estimates:
+    ## 
+    ##   Standard errors                             Sandwich
+    ##   Information bread                           Observed
+    ##   Observed information based on                Hessian
+    ## 
+    ## Latent Variables:
+    ##                    Estimate  Std.Err  z-value  P(>|z|)   Std.lv  Std.all
+    ##   axis_x =~                                                             
+    ##     i1                0.010                               0.001    0.000
+    ##     i2               68.025 1043.074    0.065    0.948    4.039    0.870
+    ##     i3              -12.862  280.109   -0.046    0.963   -0.764   -0.241
+    ##     i4               65.883 1010.981    0.065    0.948    3.912    0.821
+    ##     i5               -5.365  169.370   -0.032    0.975   -0.319   -0.091
+    ##     i6               11.128  136.885    0.081    0.935    0.661    0.197
+    ##     i7               11.318  174.912    0.065    0.948    0.672    0.764
+    ##     i8                3.957   54.646    0.072    0.942    0.235    0.283
+    ##     i9                8.111  114.847    0.071    0.944    0.482    0.536
+    ##     i10              31.896  491.501    0.065    0.948    1.894    0.770
+    ##   axis_y =~                                                             
+    ##     i1                0.000                               0.000    0.000
+    ##     i2               23.795  484.392    0.049    0.961    1.951    0.420
+    ##     i3               36.262  617.990    0.059    0.953    2.974    0.940
+    ##     i4               22.164  455.520    0.049    0.961    1.818    0.381
+    ##     i5               36.212  624.733    0.058    0.954    2.970    0.851
+    ##     i6               38.689  683.689    0.057    0.955    3.173    0.948
+    ##     i7                2.737   59.684    0.046    0.963    0.224    0.255
+    ##     i8                5.077   92.005    0.055    0.956    0.416    0.502
+    ##     i9                8.781  160.613    0.055    0.956    0.720    0.801
+    ##     i10               8.330  176.266    0.047    0.962    0.683    0.278
+    ##   axis_z =~                                                             
+    ##     i1                0.380                               6.342    0.380
+    ##     i2               -0.041    0.099   -0.416    0.677   -0.685   -0.147
+    ##     i3                0.016    0.030    0.548    0.584    0.275    0.087
+    ##     i4                0.073    0.106    0.688    0.491    1.219    0.256
+    ##     i5                0.087    0.037    2.330    0.020    1.457    0.417
+    ##     i6               -0.006    0.043   -0.142    0.887   -0.103   -0.031
+    ##     i7                0.028    0.020    1.429    0.153    0.469    0.533
+    ##     i8                0.040    0.014    2.830    0.005    0.661    0.797
+    ##     i9               -0.010    0.015   -0.677    0.499   -0.173   -0.193
+    ##     i10               0.054    0.053    1.022    0.307    0.897    0.365
+    ## 
+    ## Covariances:
+    ##                    Estimate  Std.Err  z-value  P(>|z|)   Std.lv  Std.all
+    ##   axis_x ~~                                                             
+    ##     axis_y            0.000                               0.000    0.000
+    ##     axis_z            0.000                               0.000    0.000
+    ##   axis_y ~~                                                             
+    ##     axis_z            0.000                               0.000    0.000
+    ## 
+    ## Intercepts:
+    ##                    Estimate  Std.Err  z-value  P(>|z|)   Std.lv  Std.all
+    ##    .i1               19.820    2.641    7.506    0.000   19.820    1.187
+    ##    .i2                9.471    0.734   12.897    0.000    9.471    2.039
+    ##    .i3                4.292    0.500    8.580    0.000    4.292    1.357
+    ##    .i4               12.062    0.754   16.004    0.000   12.062    2.530
+    ##    .i5                7.911    0.552   14.334    0.000    7.911    2.266
+    ##    .i6                5.801    0.529   10.962    0.000    5.801    1.733
+    ##    .i7                5.146    0.139   37.011    0.000    5.146    5.852
+    ##    .i8                4.566    0.131   34.822    0.000    4.566    5.506
+    ##    .i9                3.628    0.142   25.519    0.000    3.628    4.035
+    ##    .i10              14.112    0.389   36.290    0.000   14.112    5.738
+    ##     axis_x            0.000                               0.000    0.000
+    ##     axis_y            0.000                               0.000    0.000
+    ##     axis_z            0.000                               0.000    0.000
+    ## 
+    ## Variances:
+    ##                    Estimate  Std.Err  z-value  P(>|z|)   Std.lv  Std.all
+    ##    .i1              238.700  220.807    1.081    0.280  238.700    0.856
+    ##    .i2                0.978    0.462    2.117    0.034    0.978    0.045
+    ##    .i3                0.505    0.170    2.975    0.003    0.505    0.050
+    ##    .i4                2.627    0.952    2.759    0.006    2.627    0.116
+    ##    .i5                1.140    0.355    3.211    0.001    1.140    0.094
+    ##    .i6                0.687    0.151    4.556    0.000    0.687    0.061
+    ##    .i7                0.051    0.018    2.936    0.003    0.051    0.067
+    ##    .i8                0.022    0.020    1.107    0.268    0.022    0.032
+    ##    .i9                0.028    0.017    1.678    0.093    0.028    0.035
+    ##    .i10               1.189    0.776    1.533    0.125    1.189    0.197
+    ##     axis_x            0.004    0.112    0.031    0.975    1.000    1.000
+    ##     axis_y            0.007    0.234    0.029    0.977    1.000    1.000
+    ##     axis_z          278.507   92.478    3.012    0.003    1.000    1.000
+    ## 
+    ## R-Square:
+    ##                    Estimate
+    ##     i1                0.144
+    ##     i2                0.955
+    ##     i3                0.950
+    ##     i4                0.884
+    ##     i5                0.906
+    ##     i6                0.939
+    ##     i7                0.933
+    ##     i8                0.968
+    ##     i9                0.965
+    ##     i10               0.803
+
+## Annotated References
+
+-   Summary of common methods to assess dimensionality
+
+Timmerman, M. E., Lorenzo-Seva, U., & Ceulemans, E. (2017). The number
+of factors problem. The Wiley Handbook of Psychometric Testing: A
+Multidisciplinary Reference on Survey, Scale and Test Development, 1–2,
+305–324. <https://doi.org/10.1002/9781118489772.ch11>
+
+-   Thurstone Box
 
 Kaiser, H. F., & Horst, P. (1975). A Score Matrix for Thurstone’s Box
 Problem. Multivariate Behavioral Research, 10(1), 17–26. <http://>
-doi.org/10.1207/s15327906mbr1001\_2
+doi.org/10.1207/s15327906mbr1001_2
+
+-   Hull Method
+
+Lorenzo-Seva, U., Timmerman, M. E., & Kiers, H. a. L. (2011). The Hull
+Method for Selecting the Number of Common Factors. Multivariate
+Behavioral Research, 46(2), 340–364.
+<https://doi.org/10.1080/00273171.2011.564527>
+
+-   Parallel
+
+Timmerman, M. E., & Lorenzo-Seva, U. (2011). Dimensionality assessment
+of ordered polytomous items with parallel analysis. Psychological
+Methods, 16(2), 209–220. <https://doi.org/10.1037/a0023353>

@@ -11,7 +11,6 @@ output: github_document
 - Los autores generan una base de datos de 10 indicadores, de cuarenta cajas diferentes, agregandoles error aleatorio a las medidas.
 - Sobre esta matriz de datos, se espera ajustar un modelo con tres factores.
 
-
 # Cargar datos
 
 ## Abrir datos
@@ -53,7 +52,6 @@ box_items <- dplyr::select(box_data, i1:i10)
 
 knitr::kable(box_items, digits = 2)
 
-
 ```
 
 # Dimensionalidad
@@ -67,7 +65,7 @@ knitr::kable(box_items, digits = 2)
 #--------------------------------------------------------------------
 
 # ----------------------------------------------- 
-# scree test
+# scree test, based PCA
 # -----------------------------------------------
 
 psych::scree(box_items, factors = FALSE, pc = TRUE, hline = 1)
@@ -77,7 +75,7 @@ psych::scree(box_items, factors = FALSE, pc = TRUE, hline = 1)
 
 
 # ----------------------------------------------- 
-# scree test
+# scree test, based EFA
 # -----------------------------------------------
 
 psych::scree(box_items, factors = FALSE, pc = FALSE, hline = 1)
@@ -103,9 +101,47 @@ psych::scree(box_items, factors = FALSE, pc = FALSE, hline = 1)
 
 psych::fa.parallel(box_items, 
   fa = "fa", 
-  show.legend = FALSE, 
-  fm = "ml")
+  fm = "ml",
+  show.legend = FALSE 
+  )
 
+
+# ----------------------------------------------- 
+# parallel based on minimum rank factor analysis
+# -----------------------------------------------
+
+EFA.MRFA::parallelMRFA(box_items, 
+  Ndatsets = 500, 
+  percent  = 95, 
+  corr     = "Pearson", 
+  display  = TRUE,
+  graph    = TRUE
+  )
+
+
+```
+
+## Hull Method
+
+```{r , echo=TRUE}
+
+#--------------------------------------------------------------------
+# dimensionality
+#--------------------------------------------------------------------
+
+# ----------------------------------------------- 
+# Hull Method
+# -----------------------------------------------
+
+EFA.MRFA::hullEFA(box_items, extr = 'ULS', index_hull = 'CAF')
+
+
+# Note: CAF stands for "common part accounted for".
+#       CAF is an index that expresses the extent to which 
+#       common variance in the observed data is captured by 
+#       the common factor model. Simulation studies argue it
+#       outperforms other methods (e.g., paralell, MAP)
+#       (see Lorenzo-Seva, et al., 2011)
 ```
 
 ## MAP
@@ -159,6 +195,9 @@ abline(
   lwd=1)
 
 ```
+
+
+
 
 ## EFA
 
@@ -278,8 +317,23 @@ lavaan::summary(cfa_fit, fit.measures=TRUE, standardized=TRUE, rsquare=TRUE)
 
 ```
 
-## References
+## Annotated References
+
+- Summary of common methods to assess dimensionality
+
+Timmerman, M. E., Lorenzo-Seva, U., & Ceulemans, E. (2017). The number of factors problem. The Wiley Handbook of Psychometric Testing: A Multidisciplinary Reference on Survey, Scale and Test Development, 1–2, 305–324. https://doi.org/10.1002/9781118489772.ch11
+
+- Thurstone Box
 
 Kaiser, H. F., & Horst, P. (1975). A Score Matrix for Thurstone’s Box Problem. Multivariate Behavioral Research, 10(1), 17–26. http:// doi.org/10.1207/s15327906mbr1001_2
+
+- Hull Method
+
+Lorenzo-Seva, U., Timmerman, M. E., & Kiers, H. a. L. (2011). The Hull Method for Selecting the Number of Common Factors. Multivariate Behavioral Research, 46(2), 340–364. https://doi.org/10.1080/00273171.2011.564527
+
+- Parallel
+
+Timmerman, M. E., & Lorenzo-Seva, U. (2011). Dimensionality assessment of ordered polytomous items with parallel analysis. Psychological Methods, 16(2), 209–220. https://doi.org/10.1037/a0023353
+
 
 
