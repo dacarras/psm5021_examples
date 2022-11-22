@@ -142,6 +142,8 @@ EFA.MRFA::hullEFA(box_items, extr = 'ULS', index_hull = 'CAF')
 #       the common factor model. Simulation studies argue it
 #       outperforms other methods (e.g., paralell, MAP)
 #       (see Lorenzo-Seva, et al., 2011)
+
+
 ```
 
 ## MAP
